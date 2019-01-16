@@ -1,0 +1,77 @@
+{
+  "name": "geostyler-qgis-parser",
+  "version": "0.0.1",
+  "description": "GeoStyler Style Parser implementation for QGIS Style",
+  "main": "build/dist/QGISStyleParser.js",
+  "files": [
+    "build",
+    "index.d.ts",
+    "browser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrestris/geostyler-qgis-parser.git"
+  },
+  "keywords": [
+    "geostyler",
+    "parser",
+    "style",
+    "qgis",
+    "qml"
+  ],
+  "author": "",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/terrestris/geostyler/issues"
+  },
+  "homepage": "https://github.com/terrestris/geostyler-qgis-parser#readme",
+  "dependencies": {
+    "geostyler-style": "0.14.2",
+    "lodash": "4.17.11",
+    "xml2js": "0.4.19",
+    "xmldom": "0.1.27"
+  },
+  "scripts": {
+    "build:browser": "webpack --config webpack.browser.config.js",
+    "build": "tsc -p tsconfig.json && npm run build:browser",
+    "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
+    "prebuild": "npm run test",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run lint",
+    "release": "np --no-yarn && git push https://github.com/terrestris/geostyler-qgis-parser.git master --tags",
+    "start": "webpack --config webpack.config.js --watch",
+    "test:watch": "jest --watchAll",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "7.0.0",
+    "@types/jest": "23.3.9",
+    "@types/lodash": "4.14.118",
+    "@types/node": "10.12.10",
+    "@types/xml2js": "0.4.3",
+    "awesome-typescript-loader": "4.0.1",
+    "coveralls": "3.0.1",
+    "jest": "23.4.2",
+    "np": "3.0.4",
+    "ts-jest": "23.10.5",
+    "tslint": "5.10.0",
+    "typescript": "2.9.1",
+    "uglifyjs-webpack-plugin": "2.1.1",
+    "webpack": "4.28.4",
+    "webpack-cli": "3.2.1"
+  },
+  "jest": {
+    "testURL": "http://localhost/",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts)$": "ts-jest"
+    },
+    "testRegex": "/src/.*\\.spec.(ts|js)$",
+    "collectCoverageFrom": [
+      "src/*.{ts,js}"
+    ]
+  }
+}
