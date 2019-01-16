@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "GeoStyler Style Parser implementation for QGIS Style",
   "main": "build/dist/QGISStyleParser.js",
+  "types": "build/dist/QGISStyleParser.d.ts",
   "files": [
     "build",
     "index.d.ts",
@@ -27,6 +28,7 @@
   "homepage": "https://github.com/terrestris/geostyler-qgis-parser#readme",
   "dependencies": {
     "geostyler-style": "0.14.2",
+    "geostyler-cql-parser": "0.1.0",
     "lodash": "4.17.11",
     "xml2js": "0.4.19",
     "xmldom": "0.1.27"
@@ -50,6 +52,7 @@
     "@types/node": "10.12.18",
     "@types/xml2js": "0.4.3",
     "awesome-typescript-loader": "5.2.1",
+    "color": "3.1.0",
     "coveralls": "3.0.2",
     "jest": "23.6.0",
     "np": "3.1.0",
