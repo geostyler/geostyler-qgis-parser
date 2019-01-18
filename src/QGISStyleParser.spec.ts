@@ -6,6 +6,7 @@ import point_simple from '../data/styles/point_simple';
 import point_multiple_symbols from '../data/styles/point_multiple_symbols';
 import point_rules from '../data/styles/point_rules';
 import point_categories from '../data/styles/point_categories';
+import point_label from '../data/styles/point_label';
 import point_ranges from '../data/styles/point_ranges';
 import point_external_graphic from '../data/styles/point_external_graphic';
 import polygon_simple from '../data/styles/polygon_simple';
@@ -52,6 +53,17 @@ describe('QMLStyleParser implements StyleParser', () => {
             expect(geoStylerStyle).toBeDefined();
             expect(geoStylerStyle).toEqual(point_multiple_symbols);
           });
+      });
+    });
+    describe('TextSymbolizer', () => {
+      it('can read some basics of the QML Labeling for Points', async () => {
+        expect.assertions(2);
+        const qml = fs.readFileSync( './data/qmls/point_label.qml', 'utf8');
+        return styleParser.readStyle(qml)
+        .then((geoStylerStyle: Style) => {
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_label);
+        });
       });
     });
     describe('LineSymbolizer', () => {

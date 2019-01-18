@@ -10,7 +10,8 @@ import {
   LineSymbolizer,
   MarkSymbolizer,
   WellKnownName,
-  FillSymbolizer
+  FillSymbolizer,
+  TextSymbolizer
 } from 'geostyler-style';
 
 import { CqlParser } from 'geostyler-cql-parser';
@@ -26,6 +27,10 @@ const _get = require('lodash/get');
 
 type SymbolizerMap = {
   [key: string]: Symbolizer[]
+};
+
+type LabelMap = {
+  [filter: string]: TextSymbolizer[]
 };
 
 type QmlProp = {
@@ -107,6 +112,26 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    *
+   * @param qmlLabel
+   */
+  parseLabelTemplates(qmlLabel: string): string {
+    let geostylerLabel: string = '';
+    const qmlLabelArray = qmlLabel.split('||');
+
+    qmlLabelArray.forEach((part: string) => {
+      const singleQuotedText = part.match(/[']([^']+)[']/);
+      if (singleQuotedText) {
+        geostylerLabel += singleQuotedText[1];
+      } else {
+        geostylerLabel += `{{${part.trim()}}}`;
+      }
+    });
+
+    return geostylerLabel;
+  }
+
+  /**
+   *
    * @param qmlSymbolizer
    */
   qmlSymbolizerLayerPropsToObject(qmlSymbolizer: any) {
@@ -160,12 +185,24 @@ export class QGISStyleParser implements StyleParser {
    * @return {Rule} The GeoStyler-Style Rule
    */
   getRulesFromQmlObject(qmlObject: any): Rule[] {
-    const qmlRules: QmlRule[] = _get(qmlObject, 'qgis.renderer-v2.[0].rules[0].rule');
-    const qmlCategories: QmlCategory[] = _get(qmlObject, 'qgis.renderer-v2.[0].categories[0].category');
-    const qmlRanges: QmlRange[] = _get(qmlObject, 'qgis.renderer-v2.[0].ranges[0].range');
-    const qmlSymbols = _get(qmlObject, 'qgis.renderer-v2.[0].symbols[0].symbol');
+    const qmlRenderer = _get(qmlObject, 'qgis.renderer-v2.[0]');
+    const qmlRules: QmlRule[] = _get(qmlRenderer, 'rules[0].rule');
+    const qmlCategories: QmlCategory[] = _get(qmlRenderer, 'categories[0].category');
+    const qmlRanges: QmlRange[] = _get(qmlRenderer, 'ranges[0].range');
+    const qmlSymbols = _get(qmlRenderer, 'symbols[0].symbol');
+    const qmlLabeling = _get(qmlObject, 'qgis.labeling.[0]');
     let rules: Rule[] = [];
-    const symbolizerMap = this.parseQmlSymbolizers(qmlSymbols);
+    let symbolizerMap: SymbolizerMap = {};
+    let labelMap: LabelMap = {};
+
+    if (Array.isArray(qmlSymbols)) {
+      symbolizerMap = this.parseQmlSymbolizers(qmlSymbols);
+    }
+
+    if (qmlLabeling) {
+      labelMap = this.parseQmlLabeling(qmlLabeling);
+    }
+
     if (Array.isArray(qmlRules) && qmlRules.length > 0) {
       qmlRules.forEach((qmlRule: QmlRule, index: number) => {
         const filter: Filter | undefined = this.getFilterFromQmlRule(qmlRule);
@@ -180,7 +217,7 @@ export class QGISStyleParser implements StyleParser {
         if (scaleDenominator) {
           rule.scaleDenominator = scaleDenominator;
         }
-        if (symbolizerMap && symbolizerMap[qmlRule.$.symbol]) {
+        if (Object.keys(symbolizerMap).length > 0 && symbolizerMap[qmlRule.$.symbol]) {
           rule.symbolizers = symbolizerMap[qmlRule.$.symbol];
         }
         rules.push(rule);
@@ -221,10 +258,15 @@ export class QGISStyleParser implements StyleParser {
         rules.push(rule);
       });
     } else {
-      const symbolizers = symbolizerMap[Object.keys(symbolizerMap)[0]];
+      const symbolizers = symbolizerMap[Object.keys(symbolizerMap)[0]] || [];
+      const labels = labelMap[Object.keys(labelMap)[0]] || [];
+
       const rule: Rule = {
         name: 'QGIS Simple Symbol',
-        symbolizers
+        symbolizers:  [
+          ...symbolizers,
+          ...labels
+        ]
       };
       rules.push(rule);
     }
@@ -274,6 +316,62 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    *
+   * @param qmlLabels
+   */
+  parseQmlLabeling(qmlLabeling: any): LabelMap {
+    const type = qmlLabeling.$.type;
+    const labelMap: LabelMap = {};
+
+    if (type === 'simple') {
+      const settings = _get(qmlLabeling, 'settings[0]');
+      const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
+      labelMap.a = [textSymbolizer];
+    }
+
+    return labelMap;
+  }
+
+  /**
+   *
+   * @param settings
+   */
+  getTextSymbolizerFromLabelSettings(settings: any): TextSymbolizer {
+    let textSymbolizer: TextSymbolizer = {
+      kind: 'Text',
+    } as TextSymbolizer;
+    const styleProperties = _get(settings, 'text-style[0].$');
+    const placementProperties = _get(settings, 'placement[0].$');
+
+    if (styleProperties.textColor) {
+      textSymbolizer.color = this.qmlColorToHex(styleProperties.textColor);
+    }
+    if (styleProperties.fieldName) {
+      // TODO parse fieldName templates like: "'ID: ' || ID"
+      textSymbolizer.label = this.parseLabelTemplates(styleProperties.fieldName);
+    }
+    if (styleProperties.fontSize) {
+      textSymbolizer.size = parseFloat(styleProperties.fontSize);
+    }
+    if (styleProperties.fontFamily) {
+      textSymbolizer.font = [styleProperties.fontFamily];
+    }
+    if (styleProperties.fontLetterSpacing && parseFloat(styleProperties.fontLetterSpacing) > 0) {
+      textSymbolizer.letterSpacing = parseFloat(styleProperties.fontLetterSpacing);
+    }
+    if (styleProperties.multilineHeight && parseFloat(styleProperties.multilineHeight) > 0) {
+      textSymbolizer.lineHeight = parseFloat(styleProperties.multilineHeight);
+    }
+    if (parseFloat(placementProperties.xOffset) > 0 || parseFloat(placementProperties.yOffset) > 0) {
+      textSymbolizer.offset = [
+        parseFloat(placementProperties.xOffset),
+          parseFloat(placementProperties.yOffset)
+      ];
+    }
+    return textSymbolizer;
+  }
+
+  /**
+   *
    */
   parseQmlSymbolizers(qmlSymbolizers: any[]): SymbolizerMap {
     const symbolizerMap: SymbolizerMap = {};
@@ -289,9 +387,6 @@ export class QGISStyleParser implements StyleParser {
         case 'line':
           symbolizers = this.getLineSymbolizersFromQmlSymbolizer(qmlSymbolizer);
           break;
-        // case 'TextSymbolizer':
-        //   symbolizer = this.getTextSymbolizerFromQGISSymbolizer(qmlSymbolizer);
-        //   break;
         case 'fill':
           symbolizers = this.getFillSymbolizerFromQmlSymbolizer(qmlSymbolizer);
           break;
@@ -494,34 +589,6 @@ export class QGISStyleParser implements StyleParser {
     }
     if (qmlMarkerProps.name) {
       iconSymbolizer.image = qmlMarkerProps.name;
-    }
-
-    return iconSymbolizer;
-  }
-
-  /**
-   * Get the GeoStyler-Style IconSymbolizer from an QGIS Symbolizer
-   *
-   * @param {object} qGISSymbolizer The QGIS Symbolizer
-   * @return {IconSymbolizer} The GeoStyler-Style IconSymbolizer
-   */
-  getIconSymbolizerFromQGISSymbolizer(qGISSymbolizer: any): IconSymbolizer {
-    const onlineResource = _get(qGISSymbolizer, 'Graphic[0].ExternalGraphic[0].OnlineResource[0]');
-    let iconSymbolizer: IconSymbolizer = <IconSymbolizer> {
-      kind: 'Icon',
-      image: onlineResource.$['xlink:href']
-    };
-    const opacity = _get(qGISSymbolizer, 'Graphic[0].Opacity[0]');
-    const size = _get(qGISSymbolizer, 'Graphic[0].Size[0]');
-    const rotate = _get(qGISSymbolizer, 'Graphic[0].Rotation[0]');
-    if (opacity) {
-      iconSymbolizer.opacity = opacity;
-    }
-    if (size) {
-      iconSymbolizer.size = parseInt(size, 10);
-    }
-    if (rotate) {
-      iconSymbolizer.rotate = parseInt(rotate, 10);
     }
 
     return iconSymbolizer;
