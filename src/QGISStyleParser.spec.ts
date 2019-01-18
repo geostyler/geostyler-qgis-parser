@@ -8,6 +8,7 @@ import point_rules from '../data/styles/point_rules';
 import point_categories from '../data/styles/point_categories';
 import point_ranges from '../data/styles/point_ranges';
 import point_external_graphic from '../data/styles/point_external_graphic';
+import polygon_simple from '../data/styles/polygon_simple';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -25,7 +26,7 @@ describe('QMLStyleParser implements StyleParser', () => {
       expect(styleParser.readStyle).toBeDefined();
     });
     describe('PointSymbolizer', () => {
-      it('can read a simple QML PointSymbolizer', async () => {
+      it('can read a simple QML PointSymbol', async () => {
         expect.assertions(2);
         const qml = fs.readFileSync( './data/qmls/point_simple.qml', 'utf8');
         return styleParser.readStyle(qml)
@@ -54,13 +55,24 @@ describe('QMLStyleParser implements StyleParser', () => {
       });
     });
     describe('LineSymbolizer', () => {
-      it('can read a simple QML LineSymbolizer', async () => {
+      it('can read a simple QML LineSymbol', async () => {
         expect.assertions(2);
         const qml = fs.readFileSync( './data/qmls/line_simple.qml', 'utf8');
         return styleParser.readStyle(qml)
           .then((geoStylerStyle: Style) => {
             expect(geoStylerStyle).toBeDefined();
             expect(geoStylerStyle).toEqual(line_simple);
+          });
+      });
+    });
+    describe('FillSymbolizer', () => {
+      it('can read a simple QML FillSymbol', async () => {
+        expect.assertions(2);
+        const qml = fs.readFileSync( './data/qmls/polygon_simple.qml', 'utf8');
+        return styleParser.readStyle(qml)
+          .then((geoStylerStyle: Style) => {
+            expect(geoStylerStyle).toBeDefined();
+            expect(geoStylerStyle).toEqual(polygon_simple);
           });
       });
     });
