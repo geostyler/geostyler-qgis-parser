@@ -3,16 +3,11 @@ import {
   StyleParser,
   Style,
   Rule,
-  // ComparisonOperator,
-  // CombinationOperator,
   ScaleDenominator,
   PointSymbolizer,
   Symbolizer,
   IconSymbolizer,
-  // LineSymbolizer,
-  // FillSymbolizer,
-  // TextSymbolizer,
-  // ComparisonFilter,
+  LineSymbolizer,
   MarkSymbolizer,
   WellKnownName
 } from 'geostyler-style';
@@ -26,10 +21,7 @@ import {
   Builder
 } from 'xml2js';
 
-// const _isString = require('lodash/isString');
-// const _isNumber = require('lodash/isNumber');
 const _get = require('lodash/get');
-// const _set = require('lodash/set');
 
 type SymbolizerMap = {
   [key: string]: Symbolizer[]
@@ -110,6 +102,20 @@ export class QGISStyleParser implements StyleParser {
         reject(error);
       }
     });
+  }
+
+  /**
+   *
+   * @param qmlSymbolizer
+   */
+  qmlSymbolizerLayerPropsToObject(qmlSymbolizer: any) {
+    const qmlMarkerProps: any = {};
+    qmlSymbolizer.prop.forEach((prop: QmlProp) => {
+      const key = prop.$.k;
+      const value = prop.$.v;
+      qmlMarkerProps[key] = value;
+    });
+    return qmlMarkerProps;
   }
 
   /**
@@ -259,9 +265,9 @@ export class QGISStyleParser implements StyleParser {
         case 'marker':
           symbolizers = this.getPointSymbolizersFromQmlSymbolizer(qmlSymbolizer);
           break;
-        // case 'LineSymbolizer':
-        //   symbolizer = this.getLineSymbolizerFromQGISSymbolizer(qmlSymbolizer);
-        //   break;
+        case 'line':
+          symbolizers = this.getLineSymbolizersFromQmlSymbolizer(qmlSymbolizer);
+          break;
         // case 'TextSymbolizer':
         //   symbolizer = this.getTextSymbolizerFromQGISSymbolizer(qmlSymbolizer);
         //   break;
@@ -302,21 +308,16 @@ export class QGISStyleParser implements StyleParser {
   /**
    * Get the GeoStyler-Style MarkSymbolizer from an QML Symbolizer
    *
-   * @param {object} qmlSymbolizer The QML Symbolizer
+   * @param {object} symbolizerLayer The QML SymbolizerLayer
    * @return {MarkSymbolizer} The GeoStyler-Style MarkSymbolizer
    */
-  getPointSymbolizerFromMarkLayer(qmlSymbolizer: any): MarkSymbolizer {
+  getPointSymbolizerFromMarkLayer(symbolizerLayer: any): MarkSymbolizer {
     let markSymbolizer: MarkSymbolizer = {
       kind: 'Mark',
     } as MarkSymbolizer;
 
-    const qmlMarkerProps: any = {};
+    const qmlMarkerProps: any = this.qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-    qmlSymbolizer.prop.forEach((prop: QmlProp) => {
-      const key = prop.$.k;
-      const value = prop.$.v;
-      qmlMarkerProps[key] = value;
-    });
     const wellKnownName: string = qmlMarkerProps.name;
     const wkn = wellKnownName.charAt(0).toUpperCase() + wellKnownName.slice(1);
     markSymbolizer.wellKnownName = wkn as WellKnownName;
@@ -357,18 +358,55 @@ export class QGISStyleParser implements StyleParser {
    * @param {object} qmlSymbolizer The QML Symbolizer
    * @return {IconSymbolizer} The GeoStyler-Style IconSymbolizer
    */
-  getPointSymbolizerFromSvgLayer(qmlSymbolizer: any): IconSymbolizer {
+  getLineSymbolizersFromQmlSymbolizer(qmlSymbolizer: any): LineSymbolizer[] {
+    const {
+      qmlSymbolizerLayerPropsToObject
+    } = this;
+    return qmlSymbolizer.layer.map((symbolizerLayer: any) => {
+      let lineSymbolizer: LineSymbolizer = {
+        kind: 'Line',
+      } as LineSymbolizer;
+
+      const qmlMarkerProps: any = qmlSymbolizerLayerPropsToObject(symbolizerLayer);
+
+      if (qmlMarkerProps.line_color) {
+        const colorArray = qmlMarkerProps.line_color.split(',');
+        lineSymbolizer.opacity = parseFloat(colorArray[3]) / 255;
+        const color = Color(`rgb(${colorArray[0]},${colorArray[1]},${colorArray[2]})`);
+        lineSymbolizer.color = color.hex();
+      }
+      if (qmlMarkerProps.capstyle) {
+        lineSymbolizer.cap = qmlMarkerProps.capstyle;
+      }
+      if (qmlMarkerProps.joinstyle) {
+        lineSymbolizer.join = qmlMarkerProps.joinstyle;
+      }
+      if (qmlMarkerProps.customdash) {
+        lineSymbolizer.dasharray = qmlMarkerProps.customdash.split(';').map(parseFloat);
+      }
+      if (qmlMarkerProps.offset) {
+        lineSymbolizer.offset = parseFloat(qmlMarkerProps.offset);
+      }
+      if (qmlMarkerProps.line_width) {
+        lineSymbolizer.width = parseFloat(qmlMarkerProps.line_width);
+      }
+
+      return lineSymbolizer;
+    });
+  }
+
+  /**
+   * Get the GeoStyler-Style IconSymbolizer from an QML Symbolizer
+   *
+   * @param {object} symbolizerLayer The QML Symbolizer Layer
+   * @return {IconSymbolizer} The GeoStyler-Style IconSymbolizer
+   */
+  getPointSymbolizerFromSvgLayer(symbolizerLayer: any): IconSymbolizer {
     let iconSymbolizer: IconSymbolizer = {
       kind: 'Icon',
     } as IconSymbolizer;
 
-    const qmlMarkerProps: any = {};
-
-    qmlSymbolizer.prop.forEach((prop: QmlProp) => {
-      const key = prop.$.k;
-      const value = prop.$.v;
-      qmlMarkerProps[key] = value;
-    });
+    const qmlMarkerProps: any = this.qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
     if (qmlMarkerProps.color) {
       const colorArray = qmlMarkerProps.color.split(',');
