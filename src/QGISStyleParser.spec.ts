@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import QGISStyleParser from './QGISStyleParser';
 import { Style } from 'geostyler-style';
 import point_simple from '../data/styles/point_simple';
+import point_multiple_symbols from '../data/styles/point_multiple_symbols';
 import point_rules from '../data/styles/point_rules';
 import point_categories from '../data/styles/point_categories';
 import point_ranges from '../data/styles/point_ranges';
@@ -55,6 +56,15 @@ describe('QMLStyleParser implements StyleParser', () => {
         .then((geoStylerStyle: Style) => {
           expect(geoStylerStyle).toBeDefined();
           expect(geoStylerStyle).toEqual(point_ranges);
+        });
+    });
+    it('can read a QML PointSymbolizer with multiple Symbols', async () => {
+      expect.assertions(2);
+      const qml = fs.readFileSync( './data/qmls/point_multiple_symbols.qml', 'utf8');
+      return styleParser.readStyle(qml)
+        .then((geoStylerStyle: Style) => {
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_multiple_symbols);
         });
     });
   });
