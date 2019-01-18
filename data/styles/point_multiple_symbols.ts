@@ -26,6 +26,6 @@ const pointMultipleSymbols: Style = {
       strokeWidth: 0
     }]
   }]
-};
+} as Style;
 
 export default pointMultipleSymbols;

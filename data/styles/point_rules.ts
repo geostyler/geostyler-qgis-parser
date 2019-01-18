@@ -1,6 +1,6 @@
 import { Style } from 'geostyler-style';
 
-const pointSimplePoint: Style = {
+const pointRules: Style = {
   name: 'QGIS Style',
   rules: [{
     filter: ['==', 'Bildpositi', 1],
@@ -60,6 +60,6 @@ const pointSimplePoint: Style = {
       wellKnownName: 'Circle'
     }]
   }]
-};
+} as Style;
 
-export default pointSimplePoint;
+export default pointRules;

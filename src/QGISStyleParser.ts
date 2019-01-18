@@ -290,7 +290,9 @@ export class QGISStyleParser implements StyleParser {
       const markerClass = symbolizerLayer.$.class;
       switch (markerClass) {
         case 'SimpleMarker':
-          return this.getMarkSymbolizerFromQmlSymbolizerLayer(symbolizerLayer);
+          return this.getPointSymbolizerFromMarkLayer(symbolizerLayer);
+        case 'SvgMarker':
+          return this.getPointSymbolizerFromSvgLayer(symbolizerLayer);
         default:
           throw new Error(`Failed to parse MarkerClass ${markerClass} from qmlSymbolizer`);
       }
@@ -303,7 +305,7 @@ export class QGISStyleParser implements StyleParser {
    * @param {object} qmlSymbolizer The QML Symbolizer
    * @return {MarkSymbolizer} The GeoStyler-Style MarkSymbolizer
    */
-  getMarkSymbolizerFromQmlSymbolizerLayer(qmlSymbolizer: any): MarkSymbolizer {
+  getPointSymbolizerFromMarkLayer(qmlSymbolizer: any): MarkSymbolizer {
     let markSymbolizer: MarkSymbolizer = {
       kind: 'Mark',
     } as MarkSymbolizer;
@@ -347,6 +349,51 @@ export class QGISStyleParser implements StyleParser {
     }
 
     return markSymbolizer;
+  }
+
+  /**
+   * Get the GeoStyler-Style IconSymbolizer from an QML Symbolizer
+   *
+   * @param {object} qmlSymbolizer The QML Symbolizer
+   * @return {IconSymbolizer} The GeoStyler-Style IconSymbolizer
+   */
+  getPointSymbolizerFromSvgLayer(qmlSymbolizer: any): IconSymbolizer {
+    let iconSymbolizer: IconSymbolizer = {
+      kind: 'Icon',
+    } as IconSymbolizer;
+
+    const qmlMarkerProps: any = {};
+
+    qmlSymbolizer.prop.forEach((prop: QmlProp) => {
+      const key = prop.$.k;
+      const value = prop.$.v;
+      qmlMarkerProps[key] = value;
+    });
+
+    if (qmlMarkerProps.color) {
+      const colorArray = qmlMarkerProps.color.split(',');
+      iconSymbolizer.opacity = parseFloat(colorArray[3]) / 255;
+      const color = Color(`rgb(${colorArray[0]},${colorArray[1]},${colorArray[2]})`);
+      iconSymbolizer.color = color.hex();
+    }
+
+    if (qmlMarkerProps.angle) {
+      iconSymbolizer.rotate = parseFloat(qmlMarkerProps.angle);
+    }
+    if (qmlMarkerProps.size) {
+      iconSymbolizer.size = parseFloat(qmlMarkerProps.size);
+    }
+    if (qmlMarkerProps.offset) {
+      const offsetArray = qmlMarkerProps.offset.split(',').map(parseFloat);
+      if (offsetArray[0] > 0 || offsetArray[1] > 0) {
+        iconSymbolizer.offset = qmlMarkerProps.offset.split(',').map(parseFloat);
+      }
+    }
+    if (qmlMarkerProps.name) {
+      iconSymbolizer.image = qmlMarkerProps.name;
+    }
+
+    return iconSymbolizer;
   }
 
   /**

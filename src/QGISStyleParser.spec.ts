@@ -6,6 +6,7 @@ import point_multiple_symbols from '../data/styles/point_multiple_symbols';
 import point_rules from '../data/styles/point_rules';
 import point_categories from '../data/styles/point_categories';
 import point_ranges from '../data/styles/point_ranges';
+import point_external_graphic from '../data/styles/point_external_graphic';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -58,7 +59,16 @@ describe('QMLStyleParser implements StyleParser', () => {
           expect(geoStylerStyle).toEqual(point_ranges);
         });
     });
-    it('can read a QML PointSymbolizer with multiple Symbols', async () => {
+    it('can read a QML PointSymbolizer with an external graphic', async () => {
+      expect.assertions(2);
+      const qml = fs.readFileSync( './data/qmls/point_external_graphic.qml', 'utf8');
+      return styleParser.readStyle(qml)
+        .then((geoStylerStyle: Style) => {
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_external_graphic);
+        });
+    });
+    it('can read a QML PointSymbolizer with multiple symbols', async () => {
       expect.assertions(2);
       const qml = fs.readFileSync( './data/qmls/point_multiple_symbols.qml', 'utf8');
       return styleParser.readStyle(qml)

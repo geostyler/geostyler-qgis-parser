@@ -1,6 +1,6 @@
 import { Style } from 'geostyler-style';
 
-const pointSimplePoint: Style = {
+const pointSimple: Style = {
   name: 'QGIS Style',
   rules: [{
     name: 'QGIS Simple Symbol',
@@ -16,6 +16,6 @@ const pointSimplePoint: Style = {
       strokeWidth: 0
     }]
   }]
-};
+} as Style;
 
-export default pointSimplePoint;
+export default pointSimple;

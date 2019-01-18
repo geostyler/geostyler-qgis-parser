@@ -1,6 +1,6 @@
 import { Style } from 'geostyler-style';
 
-const pointSimplePoint: Style = {
+const pointRanges: Style = {
   name: 'QGIS Style',
   rules: [
     {
@@ -149,6 +149,6 @@ const pointSimplePoint: Style = {
       ]
     }
   ]
-};
+} as Style;
 
-export default pointSimplePoint;
+export default pointRanges;
