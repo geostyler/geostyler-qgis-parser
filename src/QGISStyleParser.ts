@@ -69,6 +69,11 @@ type QmlRange = {
   }
 };
 
+export const outlineStyleDashArrays = {
+  dot: [2, 2],
+  dash: [10, 2]
+};
+
 /**
  * This parser can be used with the GeoStyler.
  * It implements the GeoStyler-Style StyleParser interface.
@@ -364,7 +369,7 @@ export class QGISStyleParser implements StyleParser {
     if (parseFloat(placementProperties.xOffset) > 0 || parseFloat(placementProperties.yOffset) > 0) {
       textSymbolizer.offset = [
         parseFloat(placementProperties.xOffset),
-          parseFloat(placementProperties.yOffset)
+        parseFloat(placementProperties.yOffset)
       ];
     }
     return textSymbolizer;
@@ -532,16 +537,23 @@ export class QGISStyleParser implements StyleParser {
       if (qmlMarkerProps.outline_style) {
         switch (qmlMarkerProps.outline_style) {
           case 'dot':
-            fillSymbolizer.outlineDasharray = [2, 2];
+            fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dot;
             break;
           case 'dash':
-            fillSymbolizer.outlineDasharray = [10, 2];
+            fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dash;
             break;
           case 'dash dot':
-            fillSymbolizer.outlineDasharray = [10, 2, 2, 2];
+            fillSymbolizer.outlineDasharray = [
+              ...outlineStyleDashArrays.dash,
+              ...outlineStyleDashArrays.dot
+            ];
             break;
           case 'dash dot dot':
-            fillSymbolizer.outlineDasharray = [10, 2, 2, 2, 2, 2];
+            fillSymbolizer.outlineDasharray = [
+              ...outlineStyleDashArrays.dash,
+              ...outlineStyleDashArrays.dot,
+              ...outlineStyleDashArrays.dot
+            ];
             break;
           default:
             break;
