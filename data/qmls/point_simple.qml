@@ -18,7 +18,7 @@
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
           <prop k="outline_width_unit" v="MM"/>
           <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="2"/>
+          <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
           <prop k="size_unit" v="MM"/>
           <prop k="vertical_anchor_point" v="1"/>

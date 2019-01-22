@@ -452,7 +452,7 @@ export class QGISStyleParser implements StyleParser {
       markSymbolizer.rotate = parseFloat(qmlMarkerProps.angle);
     }
     if (qmlMarkerProps.size) {
-      markSymbolizer.radius = parseFloat(qmlMarkerProps.size);
+      markSymbolizer.radius = parseFloat(qmlMarkerProps.size) / 2;
     }
     // TODO Fix in style declaration
     // if (qmlMarkerProps.offset) {
