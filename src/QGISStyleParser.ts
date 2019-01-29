@@ -289,7 +289,7 @@ export class QGISStyleParser implements StyleParser {
    */
   getFilterFromQmlRule(qmlRule: QmlRule): Filter | undefined {
     const qmlFilter = _get(qmlRule, '$.filter');
-    let filter: Filter;
+    let filter;
     if (qmlFilter) {
       filter = this.cqlParser.read(qmlFilter);
       return filter;
