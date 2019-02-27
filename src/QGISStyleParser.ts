@@ -165,6 +165,21 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    *
+   * @param hex
+   * @param opacity
+   */
+  qmlColorFromHexAndOpacity(hex?: string, opacity?: number): string | undefined {
+    const colorArray = Color(hex).alpha(opacity).rgb().array();
+    const alpha = colorArray[3] === undefined ? 255
+      : colorArray[3] === 0 ? 0
+        : 255 / colorArray[3];
+    const color = `${colorArray[0]},${colorArray[1]},${colorArray[2]},${alpha}`;
+
+    return color;
+  }
+
+  /**
+   *
    * @param color
    */
   qmlColorToOpacity(color: string): number {
@@ -452,7 +467,7 @@ export class QGISStyleParser implements StyleParser {
       markSymbolizer.rotate = parseFloat(qmlMarkerProps.angle);
     }
     if (qmlMarkerProps.size) {
-      markSymbolizer.radius = parseFloat(qmlMarkerProps.size);
+      markSymbolizer.radius = parseFloat(qmlMarkerProps.size) / 2;
     }
     // TODO Fix in style declaration
     // if (qmlMarkerProps.offset) {
@@ -619,11 +634,112 @@ export class QGISStyleParser implements StyleParser {
       try {
         const builder = new Builder();
         const qmlObject = this.geoStylerStyleToQmlObject(geoStylerStyle);
-        const qmlString = builder.buildObject(qmlObject);
+        const qmlString = builder
+          .buildObject(qmlObject)
+          .replace(
+            `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`,
+            `<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>`
+          );
         resolve(qmlString);
       } catch (error) {
         reject(error);
       }
+    });
+  }
+
+  /**
+   *
+   * @param geostylerStyle
+   */
+  getQmlSymbolsFromStyle(geostylerStyle: Style): any[] {
+    return geostylerStyle.rules.map(this.getQmlSymbolFromRule.bind(this));
+  }
+
+  /**
+   *
+   * @param rule
+   */
+  getQmlSymbolFromRule(rule: Rule, index: number): any {
+    const layer = this.getQmlLayersFromRule(rule);
+    let type = 'marker';
+    return {
+      $: {
+        type,
+        name: index.toString()
+      },
+      layer
+    };
+  }
+
+  /**
+   *
+   * @param rule
+   */
+  getQmlLayersFromRule(rule: Rule): any {
+    return rule.symbolizers.map(this.getQmlLayerFromSymbolizer.bind(this));
+  }
+
+  /**
+   *
+   * @param symbolizer
+   */
+  getQmlLayerFromSymbolizer(symbolizer: Symbolizer): any {
+    switch (symbolizer.kind) {
+      // case 'Fill':
+      //   clazz = 'SimpleFill';
+      //   break;
+      // case 'Icon':
+      //   clazz = 'SvgMarker';
+      //   break;
+      // case 'Line':
+      //   clazz = 'SimpleLine';
+      //   break;
+      case 'Mark':
+        return this.getQmlMarkSymbolFromSymbolizer(symbolizer as MarkSymbolizer);
+      default:
+        break;
+    }
+  }
+
+  /**
+   *
+   */
+  getQmlMarkSymbolFromSymbolizer(symbolizer: MarkSymbolizer): any {
+    const qmlProps = {
+      angle: symbolizer.rotate,
+      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      name: symbolizer.wellKnownName.toLowerCase(),
+      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.strokeColor, symbolizer.strokeOpacity),
+      outline_style: 'solid',
+      outline_width: symbolizer.strokeWidth,
+      outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
+      outline_width_unit: 'Pixel',
+      size: symbolizer.radius ? symbolizer.radius * 2 : undefined,
+      size_map_unit_scale: '3x:0,0,0,0,0,0',
+      size_unit: 'Pixel'
+    };
+
+    return {
+      $: {
+        class: 'SimpleMarker'
+      },
+      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+    };
+  }
+
+  /**
+   *
+   * @param properties
+   */
+  propsObjectToQmlSymbolProps(properties: any): QmlProp[] {
+    return Object.keys(properties).map(k => {
+      const v = properties[k];
+      return {
+        $: {
+          k,
+          v
+        }
+      };
     });
   }
 
@@ -634,9 +750,21 @@ export class QGISStyleParser implements StyleParser {
    * @return {object} The object representation of a QML Style (readable with xml2js)
    */
   geoStylerStyleToQmlObject(geoStylerStyle: Style): any {
-    const rules: any[] = [];
-    rules.forEach(rule => {return {name}; });
-    return {};
+    const type: string = 'singleSymbol'; // TODO determine by geostylerStyle
+    const symbols: any[] = this.getQmlSymbolsFromStyle(geoStylerStyle);
+    return {
+      qgis: {
+        $: {},
+        'renderer-v2': [{
+          $: {
+            type
+          },
+          symbols: [{
+            symbol: symbols
+          }]
+        }]
+      }
+    };
   }
 
 }
