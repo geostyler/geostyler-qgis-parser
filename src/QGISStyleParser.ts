@@ -811,13 +811,10 @@ export class QGISStyleParser implements StyleParser {
     switch (symbolizer.kind) {
       case 'Fill':
         return this.getQmlFillSymbolFromSymbolizer(symbolizer as FillSymbolizer);
-        break;
       case 'Icon':
         return this.getQmlMarkSymbolFromIconSymbolizer(symbolizer as IconSymbolizer);
-        break;
       case 'Line':
         return this.getQmlLineSymbolFromSymbolizer(symbolizer as LineSymbolizer);
-        break;
       case 'Mark':
         return this.getQmlMarkSymbolFromSymbolizer(symbolizer as MarkSymbolizer);
       default:
