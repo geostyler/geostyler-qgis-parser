@@ -4,12 +4,13 @@ const pointStyledLabel: Style = {
   name: 'QGIS Style',
   rules: [{
     name: 'QGIS Simple Symbol',
+    filter: ['>', 'value', 0.1],
     symbolizers: [{
       kind: 'Text',
       color: '#000000',
-      label: 'ID: {{ID}}',
+      label: '{{locality_name}}',
       lineHeight: 1,
-      font: ['Courier 10 Pitch'],
+      font: ['Sans Serif'],
       size: 10,
       offset: [13, 37]
     }]
