@@ -921,7 +921,7 @@ export class QGISStyleParser implements StyleParser {
         const textStyleAttributes: any = {
           fontSize: textSymbolizer.size || 12,
           fontLetterSpacing: textSymbolizer.letterSpacing || 0,
-          multilineHeight: textSymbolizer.lineHeight || 1,
+          multilineHeight: textSymbolizer.lineHeight !== undefined ? textSymbolizer.lineHeight : 1,
           textColor: textSymbolizer.color ? this.qmlColorFromHexAndOpacity(textSymbolizer.color, 1) : '0,0,0,255'
         };
         if (textSymbolizer.font) {
