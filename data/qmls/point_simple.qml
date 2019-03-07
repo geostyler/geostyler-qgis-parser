@@ -1,6 +1,9 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
 <qgis>
-  <renderer-v2 type="singleSymbol">
+  <renderer-v2 type="RuleRenderer">
+    <rules key="0">
+      <rule key="0" symbol="0" label="QGIS Simple Symbol"/>
+    </rules>
     <symbols>
       <symbol type="marker" name="0">
         <layer class="SimpleMarker">

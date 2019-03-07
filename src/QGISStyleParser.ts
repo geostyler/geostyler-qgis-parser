@@ -46,7 +46,8 @@ type QmlRule = {
     scalemaxdenom?: number,
     scalemindenom?: number,
     symbol: string,
-    key: string
+    key: string,
+    label: string
   }
 };
 
@@ -72,6 +73,17 @@ type QmlRange = {
 export const outlineStyleDashArrays = {
   dot: [2, 2],
   dash: [10, 2]
+};
+
+const AnchorMap = {
+  left: 'L',
+  right: 'R',
+  top: 'T',
+  bottom: 'B',
+  'top-left': 'TL',
+  'top-right': 'TR',
+  'bottom-left': 'BL',
+  'bottom-right': 'BR'
 };
 
 /**
@@ -170,10 +182,10 @@ export class QGISStyleParser implements StyleParser {
    */
   qmlColorFromHexAndOpacity(hex?: string, opacity?: number): string | undefined {
     const colorArray = Color(hex).alpha(opacity).rgb().array();
-    const alpha = colorArray[3] === undefined ? 255
+    const alpha = colorArray[3] === undefined || isNaN(colorArray[3]) ? 255
       : colorArray[3] === 0 ? 0
-        : 255 / colorArray[3];
-    const color = `${colorArray[0]},${colorArray[1]},${colorArray[2]},${alpha}`;
+        : 255 * colorArray[3];
+    const color = `${colorArray[0]},${colorArray[1]},${colorArray[2]},${Math.round(alpha)}`;
 
     return color;
   }
@@ -227,7 +239,7 @@ export class QGISStyleParser implements StyleParser {
       qmlRules.forEach((qmlRule: QmlRule, index: number) => {
         const filter: Filter | undefined = this.getFilterFromQmlRule(qmlRule);
         const scaleDenominator: ScaleDenominator | undefined = this.getScaleDenominatorFromRule(qmlRule);
-        const name = qmlRule.$.filter;
+        const name = qmlRule.$.label || qmlRule.$.filter;
         let rule: Rule = <Rule> {
           name
         };
@@ -280,7 +292,6 @@ export class QGISStyleParser implements StyleParser {
     } else {
       const symbolizers = symbolizerMap[Object.keys(symbolizerMap)[0]] || [];
       const labels = labelMap[Object.keys(labelMap)[0]] || [];
-
       const rule: Rule = {
         name: 'QGIS Simple Symbol',
         symbolizers:  [
@@ -288,6 +299,16 @@ export class QGISStyleParser implements StyleParser {
           ...labels
         ]
       };
+
+      try {
+        const filter = this.cqlParser.read(Object.keys(labelMap)[0]);
+        if (filter) {
+          rule.filter = filter;
+        }
+      } catch (e) {
+        // in the case of made up filters
+      }
+
       rules.push(rule);
     }
 
@@ -342,6 +363,14 @@ export class QGISStyleParser implements StyleParser {
     const type = qmlLabeling.$.type;
     const labelMap: LabelMap = {};
 
+    if (type === 'rule-based') {
+      const rules = _get(qmlLabeling, 'rules[0].rule');
+      rules.forEach((rule: QmlRule, index: number) => {
+        const settings = _get(rule, 'settings[0]');
+        const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
+        labelMap[rule.$.filter || index] = [textSymbolizer];
+      });
+    }
     if (type === 'simple') {
       const settings = _get(qmlLabeling, 'settings[0]');
       const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
@@ -634,6 +663,7 @@ export class QGISStyleParser implements StyleParser {
       try {
         const builder = new Builder();
         const qmlObject = this.geoStylerStyleToQmlObject(geoStylerStyle);
+        this.convertTextSymbolizers(qmlObject, geoStylerStyle);
         const qmlString = builder
           .buildObject(qmlObject)
           .replace(
@@ -649,10 +679,49 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    *
+   * @param filter
+   */
+  getQmlFilterFromFilter(filter: Filter): string | undefined {
+    return this.cqlParser.write(filter);
+  }
+
+  /**
+   *
+   */
+  getQmlRuleFromRule(rule: Rule, index: number) {
+    const filter = rule.filter;
+    const qmlRule: any = {
+      $: {
+        key: `${index}`,
+        symbol: `${index}`,
+        label: rule.name
+      }
+    };
+    if (rule.scaleDenominator) {
+      qmlRule.$.scalemindenom = rule.scaleDenominator.min;
+      qmlRule.$.scalemaxdenom = rule.scaleDenominator.max;
+    }
+    if (filter) {
+      const cqlFilter = this.getQmlFilterFromFilter(filter);
+      if (cqlFilter) {
+        qmlRule.$.filter = this.getQmlFilterFromFilter(filter);
+      }
+    }
+    return qmlRule;
+  }
+
+  /**
+   *
    * @param geostylerStyle
    */
-  getQmlSymbolsFromStyle(geostylerStyle: Style): any[] {
-    return geostylerStyle.rules.map(this.getQmlSymbolFromRule.bind(this));
+  getQmlSymbolsFromStyle(geostylerStyle: Style, rules: any[]): any[] {
+    return geostylerStyle.rules.map((rule, index) => {
+      const symbol = this.getQmlSymbolFromRule(rule, index);
+      if (symbol) {
+        rules.push(this.getQmlRuleFromRule(rule, index));
+      }
+      return symbol;
+    }).filter(s => s);
   }
 
   /**
@@ -661,13 +730,67 @@ export class QGISStyleParser implements StyleParser {
    */
   getQmlSymbolFromRule(rule: Rule, index: number): any {
     const layer = this.getQmlLayersFromRule(rule);
-    let type = 'marker';
-    return {
+    let type;
+    switch (rule.symbolizers[0].kind) {
+      case 'Line':
+        type = 'line';
+        break;
+      case 'Fill':
+        type = 'fill';
+        break;
+      default:
+        type = 'marker';
+    }
+    return layer && layer[0] ? {
       $: {
         type,
         name: index.toString()
       },
       layer
+    } : undefined;
+  }
+
+  /**
+   *
+   */
+  getQmlLineSymbolFromSymbolizer(symbolizer: LineSymbolizer): any {
+    const qmlProps = {
+      line_color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      offset: symbolizer.offset,
+      offset_map_unit_scale: '3x:0,0,0,0,0,0',
+      offset_unit: 'Pixel',
+      joinstyle: symbolizer.join,
+      capstyle: symbolizer.cap,
+      line_width: symbolizer.width,
+      customdash: symbolizer.dasharray ? symbolizer.dasharray.join(';') : null
+    };
+
+    return {
+      $: {
+        class: 'SimpleLine'
+      },
+      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+    };
+  }
+
+  getQmlFillSymbolFromSymbolizer(symbolizer: FillSymbolizer): any {
+    const qmlProps = {
+      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      offset_map_unit_scale: '3x:0,0,0,0,0,0',
+      offset_unit: 'Pixel',
+      outline_style: symbolizer.outlineDasharray ? 'dash' : 'solid',
+      outline_width: symbolizer.outlineWidth || 0,
+      outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
+      outline_width_unit: 'Pixel',
+      customdash: symbolizer.outlineDasharray ? symbolizer.outlineDasharray.join(';') : undefined,
+      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.outlineColor, 1)
+    };
+
+    return {
+      $: {
+        class: 'SimpleFill'
+      },
+      prop: this.propsObjectToQmlSymbolProps(qmlProps)
     };
   }
 
@@ -676,7 +799,8 @@ export class QGISStyleParser implements StyleParser {
    * @param rule
    */
   getQmlLayersFromRule(rule: Rule): any {
-    return rule.symbolizers.map(this.getQmlLayerFromSymbolizer.bind(this));
+    const symbolizers = rule.symbolizers.map(this.getQmlLayerFromSymbolizer.bind(this));
+    return symbolizers.length ? symbolizers : undefined;
   }
 
   /**
@@ -685,15 +809,12 @@ export class QGISStyleParser implements StyleParser {
    */
   getQmlLayerFromSymbolizer(symbolizer: Symbolizer): any {
     switch (symbolizer.kind) {
-      // case 'Fill':
-      //   clazz = 'SimpleFill';
-      //   break;
-      // case 'Icon':
-      //   clazz = 'SvgMarker';
-      //   break;
-      // case 'Line':
-      //   clazz = 'SimpleLine';
-      //   break;
+      case 'Fill':
+        return this.getQmlFillSymbolFromSymbolizer(symbolizer as FillSymbolizer);
+      case 'Icon':
+        return this.getQmlMarkSymbolFromIconSymbolizer(symbolizer as IconSymbolizer);
+      case 'Line':
+        return this.getQmlLineSymbolFromSymbolizer(symbolizer as LineSymbolizer);
       case 'Mark':
         return this.getQmlMarkSymbolFromSymbolizer(symbolizer as MarkSymbolizer);
       default:
@@ -701,17 +822,35 @@ export class QGISStyleParser implements StyleParser {
     }
   }
 
+  getQmlMarkSymbolFromIconSymbolizer(symbolizer: IconSymbolizer): any {
+    const qmlProps = {
+      angle: symbolizer.rotate || 0,
+      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      name: symbolizer.image,
+      size: symbolizer.size,
+      size_map_unit_scale: '3x:0,0,0,0,0,0',
+      size_unit: 'Pixel'
+    };
+
+    return {
+      $: {
+        class: 'SvgMarker'
+      },
+      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+    };
+  }
+
   /**
    *
    */
   getQmlMarkSymbolFromSymbolizer(symbolizer: MarkSymbolizer): any {
     const qmlProps = {
-      angle: symbolizer.rotate,
+      angle: symbolizer.rotate || 0,
       color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
       name: symbolizer.wellKnownName.toLowerCase(),
       outline_color: this.qmlColorFromHexAndOpacity(symbolizer.strokeColor, symbolizer.strokeOpacity),
       outline_style: 'solid',
-      outline_width: symbolizer.strokeWidth,
+      outline_width: symbolizer.strokeWidth || 0,
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
       outline_width_unit: 'Pixel',
       size: symbolizer.radius ? symbolizer.radius * 2 : undefined,
@@ -740,7 +879,7 @@ export class QGISStyleParser implements StyleParser {
           v
         }
       };
-    });
+    }).filter(s => s.$.v !== undefined);
   }
 
   /**
@@ -750,8 +889,9 @@ export class QGISStyleParser implements StyleParser {
    * @return {object} The object representation of a QML Style (readable with xml2js)
    */
   geoStylerStyleToQmlObject(geoStylerStyle: Style): any {
-    const type: string = 'singleSymbol'; // TODO determine by geostylerStyle
-    const symbols: any[] = this.getQmlSymbolsFromStyle(geoStylerStyle);
+    const type: string = 'RuleRenderer';
+    const rules: any[] = [];
+    const symbols: any[] = this.getQmlSymbolsFromStyle(geoStylerStyle, rules);
     return {
       qgis: {
         $: {},
@@ -759,12 +899,99 @@ export class QGISStyleParser implements StyleParser {
           $: {
             type
           },
+          rules: [{
+            $: {
+              key: '0'
+            },
+            rule: rules
+          }],
           symbols: [{
             symbol: symbols
           }]
         }]
       }
     };
+  }
+
+  convertTextSymbolizerRule(qmlRuleList: any[], rule: Rule) {
+    let textSymbolizer: TextSymbolizer;
+    rule.symbolizers.forEach(symbolizer => {
+      if (symbolizer.kind === 'Text') {
+        textSymbolizer = symbolizer as TextSymbolizer;
+        const textStyleAttributes: any = {
+          fontSize: textSymbolizer.size || 12,
+          fontLetterSpacing: textSymbolizer.letterSpacing || 0,
+          multilineHeight: textSymbolizer.lineHeight !== undefined ? textSymbolizer.lineHeight : 1,
+          textColor: textSymbolizer.color ? this.qmlColorFromHexAndOpacity(textSymbolizer.color, 1) : '0,0,0,255'
+        };
+        if (textSymbolizer.font) {
+          textStyleAttributes.fontFamily = textSymbolizer.font[0];
+        }
+        if (textSymbolizer.label) {
+          textStyleAttributes.fieldName = textSymbolizer.label.replace('{{', '').replace('}}', '');
+        }
+        const textRule: any = {
+          $: {
+            key: `${qmlRuleList.length}`
+          },
+          settings: [{
+            'text-style': [{
+              $: textStyleAttributes
+            }],
+            placement: [{
+              $: {
+                predefinedPositionOrder: textSymbolizer.anchor ? AnchorMap[textSymbolizer.anchor] :
+                  'TR,TL,BR,BL,R,L,TSR,BSR',
+                xOffset: textSymbolizer.offset ? `${textSymbolizer.offset[0]}` : `0`,
+                yOffset: textSymbolizer.offset ? `${textSymbolizer.offset[1]}` : `0`,
+                rotationAngle: textSymbolizer.rotate ? textSymbolizer.rotate : `0`
+              }
+            }]
+          }]
+        };
+
+        if (textSymbolizer.haloColor) {
+          textRule.settings['text-buffer'] = [{
+            $: {
+              bufferSize: textSymbolizer.haloWidth || `0`,
+              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1)
+            }
+          }];
+        }
+
+        if (rule.filter) {
+          textRule.$.filter = this.cqlParser.write(rule.filter);
+        }
+
+        qmlRuleList.push(textRule);
+      }
+    });
+  }
+
+  convertTextSymbolizers(qmlObject: any, geoStylerStyle: Style): any {
+    const textSymbolizerRules: Rule[] = [];
+    geoStylerStyle.rules.forEach(rule => {
+      rule.symbolizers.forEach(symbolizer => {
+        if (symbolizer.kind === 'Text' && !textSymbolizerRules.includes(rule)) {
+          textSymbolizerRules.push(rule);
+        }
+      });
+    });
+    if (textSymbolizerRules.length > 0) {
+      qmlObject.qgis.labeling = [{
+        $: {
+          type: 'rule-based'
+        },
+        rules: [{
+          $: {
+            key: '0'
+          },
+          rule: []
+        }]
+      }];
+      textSymbolizerRules.forEach(rule =>
+        this.convertTextSymbolizerRule(qmlObject.qgis.labeling[0].rules[0].rule, rule));
+    }
   }
 
 }
