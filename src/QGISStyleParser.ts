@@ -731,6 +731,9 @@ export class QGISStyleParser implements StyleParser {
   getQmlSymbolFromRule(rule: Rule, index: number): any {
     const layer = this.getQmlLayersFromRule(rule);
     let type;
+    if (!rule.symbolizers.length) {
+      return;
+    }
     switch (rule.symbolizers[0].kind) {
       case 'Line':
         type = 'line';
