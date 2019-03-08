@@ -10,6 +10,7 @@ import point_label from '../data/styles/point_label';
 import point_ranges from '../data/styles/point_ranges';
 import point_external_graphic from '../data/styles/point_external_graphic';
 import polygon_simple from '../data/styles/polygon_simple';
+import no_symbolizer from '../data/styles/no_symbolizer';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -190,6 +191,15 @@ describe('QMLStyleParser implements StyleParser', () => {
         expect.assertions(2);
         const qml = fs.readFileSync( './data/qmls/point_rules.qml', 'utf8');
         return styleParser.writeStyle(point_rules)
+          .then((qgisStyle: string) => {
+            expect(qgisStyle).toBeDefined();
+            expect(qgisStyle).toEqual(qml);
+          });
+      });
+      it('can write QML with no symbolizers', async () => {
+        expect.assertions(2);
+        const qml = fs.readFileSync('./data/qmls/no_symbolizer.qml', 'utf8');
+        return styleParser.writeStyle(no_symbolizer)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
             expect(qgisStyle).toEqual(qml);
