@@ -698,8 +698,12 @@ export class QGISStyleParser implements StyleParser {
       }
     };
     if (rule.scaleDenominator) {
-      qmlRule.$.scalemindenom = rule.scaleDenominator.min;
-      qmlRule.$.scalemaxdenom = rule.scaleDenominator.max;
+      if (rule.scaleDenominator.min) {
+        qmlRule.$.scalemindenom = rule.scaleDenominator.min;
+      }
+      if (rule.scaleDenominator.max) {
+        qmlRule.$.scalemaxdenom = rule.scaleDenominator.max;
+      }
     }
     if (filter) {
       const cqlFilter = this.getQmlFilterFromFilter(filter);
@@ -757,16 +761,18 @@ export class QGISStyleParser implements StyleParser {
    *
    */
   getQmlLineSymbolFromSymbolizer(symbolizer: LineSymbolizer): any {
-    const qmlProps = {
+    const qmlProps: any = {
       line_color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
       offset: symbolizer.offset,
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
       joinstyle: symbolizer.join,
       capstyle: symbolizer.cap,
-      line_width: symbolizer.width,
-      customdash: symbolizer.dasharray ? symbolizer.dasharray.join(';') : null
+      line_width: symbolizer.width
     };
+    if (symbolizer.dasharray) {
+      qmlProps.customdash = symbolizer.dasharray.join(';');
+    }
 
     return {
       $: {
@@ -782,7 +788,7 @@ export class QGISStyleParser implements StyleParser {
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
       outline_style: symbolizer.outlineDasharray ? 'dash' : 'solid',
-      outline_width: symbolizer.outlineWidth || 0,
+      outline_width: symbolizer.outlineWidth || '0',
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
       outline_width_unit: 'Pixel',
       customdash: symbolizer.outlineDasharray ? symbolizer.outlineDasharray.join(';') : undefined,
@@ -802,7 +808,7 @@ export class QGISStyleParser implements StyleParser {
    * @param rule
    */
   getQmlLayersFromRule(rule: Rule): any {
-    const symbolizers = rule.symbolizers.map(this.getQmlLayerFromSymbolizer.bind(this));
+    const symbolizers = rule.symbolizers.map(this.getQmlLayerFromSymbolizer.bind(this)).filter(s => s);
     return symbolizers.length ? symbolizers : undefined;
   }
 
