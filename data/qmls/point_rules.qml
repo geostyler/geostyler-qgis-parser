@@ -1,10 +1,10 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
 <qgis>
   <renderer-v2 type="RuleRenderer">
-    <rules key="0">
-      <rule key="0" symbol="0" label="Bildpositi = 1" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi = 1"/>
-      <rule key="1" symbol="1" label="Bildpositi > 1 AND Bildpositi &lt; 3" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi > 1 AND Bildpositi &lt; 3"/>
-      <rule key="2" symbol="2" label="Bildpositi = 3" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi = 3"/>
+    <rules key="renderer_rules">
+      <rule key="renderer_rule_0" symbol="0" label="Bildpositi = 1" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi = 1"/>
+      <rule key="renderer_rule_1" symbol="1" label="Bildpositi > 1 AND Bildpositi &lt; 3" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi > 1 AND Bildpositi &lt; 3"/>
+      <rule key="renderer_rule_2" symbol="2" label="Bildpositi = 3" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi = 3"/>
     </rules>
     <symbols>
       <symbol type="marker" name="0">

@@ -1,8 +1,8 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
 <qgis>
   <renderer-v2 type="RuleRenderer">
-    <rules key="0">
-      <rule key="0" symbol="0" label="QGIS Simple Symbol"/>
+    <rules key="renderer_rules">
+      <rule key="renderer_rule_0" symbol="0" label="QGIS Simple Symbol"/>
     </rules>
     <symbols>
       <symbol type="fill" name="0">

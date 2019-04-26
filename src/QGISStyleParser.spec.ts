@@ -140,7 +140,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(point_external_graphic)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
       it('can write a QML PointSymbolizer with multiple symbols', async () => {
@@ -149,7 +149,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(point_multiple_symbols)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
     });
@@ -160,7 +160,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(point_label)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
     });
@@ -171,7 +171,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(line_simple)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
     });
@@ -182,7 +182,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(polygon_simple)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
     });
@@ -193,7 +193,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(point_rules)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
       it('can write QML with no symbolizers', async () => {
@@ -202,7 +202,7 @@ describe('QMLStyleParser implements StyleParser', () => {
         return styleParser.writeStyle(no_symbolizer)
           .then((qgisStyle: string) => {
             expect(qgisStyle).toBeDefined();
-            expect(qgisStyle).toEqual(qml);
+            expect(qgisStyle).toEqual(qml.trim());
           });
       });
     });
