@@ -694,7 +694,7 @@ export class QGISStyleParser implements StyleParser {
     const filter = rule.filter;
     const qmlRule: any = {
       $: {
-        key: `${index}`,
+        key: `renderer_rule_${index}`,
         symbol: `${index}`,
         label: rule.name
       }
@@ -912,7 +912,7 @@ export class QGISStyleParser implements StyleParser {
           },
           rules: [{
             $: {
-              key: '0'
+              key: 'renderer_rules'
             },
             rule: rules
           }],
@@ -943,7 +943,7 @@ export class QGISStyleParser implements StyleParser {
         }
         const textRule: any = {
           $: {
-            key: `${qmlRuleList.length}`
+            key: `labeling_rule_${qmlRuleList.length}`
           },
           settings: [{
             'text-style': [{
@@ -995,7 +995,7 @@ export class QGISStyleParser implements StyleParser {
         },
         rules: [{
           $: {
-            key: '0'
+            key: 'labeling_rules'
           },
           rule: []
         }]

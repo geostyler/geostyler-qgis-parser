@@ -1,5 +1,5 @@
 const baseConfig = require('./webpack.config');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 require("@babel/polyfill");
 
 module.exports = {
@@ -7,6 +7,6 @@ module.exports = {
   mode: 'production',
   entry: ["@babel/polyfill", "./src/QGISStyleParser.ts"],
   plugins: [
-    new UglifyJsPlugin()
+    new TerserPlugin()
   ]
 };
