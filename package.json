@@ -27,14 +27,20 @@
   },
   "homepage": "https://github.com/terrestris/geostyler-qgis-parser#readme",
   "dependencies": {
-    "geostyler-style": "1.1.0",
+    "@babel/core": "7.4.3",
+    "@types/jest": "24.0.11",
+    "@types/lodash": "4.14.122",
+    "@types/node": "11.13.7",
+    "@types/xml2js": "0.4.4",
+    "color": "3.1.1",
     "geostyler-cql-parser": "0.1.2",
+    "geostyler-style": "1.1.0",
     "lodash": "4.17.11",
     "xml2js": "0.4.19",
     "xmldom": "0.1.27"
   },
   "scripts": {
-    "build:browser": "webpack --config webpack.browser.config.js",
+    "build:browser": "webpack --config browser-build.config.js",
     "start:dev": "webpack --mode development --config dev-build.config.js --watch",
     "build": "tsc -p tsconfig.json && npm run build:browser",
     "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
@@ -42,40 +48,24 @@
     "prepublishOnly": "npm run build",
     "pretest": "npm run lint",
     "release": "np --no-yarn && git push https://github.com/terrestris/geostyler-qgis-parser.git master --tags",
-    "start": "webpack --config webpack.config.js --watch",
     "test:watch": "jest --watchAll",
     "test": "jest"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.4.3",
     "@babel/polyfill": "7.4.3",
-    "@types/jest": "24.0.11",
-    "@types/lodash": "4.14.122",
-    "@types/node": "11.13.7",
-    "@types/xml2js": "0.4.4",
-    "awesome-typescript-loader": "5.2.1",
-    "color": "3.1.1",
+    "@babel/preset-env": "7.4.3",
+    "@babel/preset-typescript": "7.3.3",
+    "babel-jest": "24.7.1",
     "coveralls": "3.0.3",
-    "jest": "23.6.0",
+    "jest": "24.7.1",
     "np": "5.0.0",
     "terser-webpack-plugin": "1.2.3",
-    "ts-jest": "24.0.1",
-    "tslint": "5.12.1",
-    "typescript": "3.2.4",
+    "ts-loader": "5.4.3",
+    "tslint": "5.16.0",
+    "typescript": "3.4.5",
     "webpack": "4.30.0",
     "webpack-cli": "3.3.1"
-  },
-  "jest": {
-    "testURL": "http://localhost/",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      "\\.(ts)$": "ts-jest"
-    },
-    "testRegex": "/src/.*\\.spec.(ts|js)$",
-    "collectCoverageFrom": [
-      "src/*.{ts,js}"
-    ]
   }
 }
