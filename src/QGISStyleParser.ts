@@ -102,6 +102,8 @@ export class QGISStyleParser implements StyleParser {
    */
   public static title = 'QGIS Style Parser';
 
+  title = 'QGIS Style Parser';
+
   /**
    * The readStyle implementation of the GeoStyler-Style StyleParser interface.
    * It reads a QML as a string and returns a Promise.
@@ -544,7 +546,7 @@ export class QGISStyleParser implements StyleParser {
         lineSymbolizer.dasharray = qmlMarkerProps.customdash.split(';').map(parseFloat);
       }
       if (qmlMarkerProps.offset) {
-        lineSymbolizer.offset = parseFloat(qmlMarkerProps.offset);
+        lineSymbolizer.perpendicularOffset = parseFloat(qmlMarkerProps.offset);
       }
       if (qmlMarkerProps.line_width) {
         lineSymbolizer.width = parseFloat(qmlMarkerProps.line_width);
@@ -763,7 +765,7 @@ export class QGISStyleParser implements StyleParser {
   getQmlLineSymbolFromSymbolizer(symbolizer: LineSymbolizer): any {
     const qmlProps: any = {
       line_color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
-      offset: symbolizer.offset,
+      offset: symbolizer.perpendicularOffset,
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
       joinstyle: symbolizer.join,

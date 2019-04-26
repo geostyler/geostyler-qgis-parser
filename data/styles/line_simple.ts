@@ -11,7 +11,7 @@ const pointSimple: Style = {
       dasharray: [12, 12],
       cap: 'square',
       join: 'round',
-      offset: 2,
+      perpendicularOffset: 2,
       opacity: 1
     }]
   }]
