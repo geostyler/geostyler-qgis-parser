@@ -61,7 +61,7 @@
     "coveralls": "3.0.3",
     "jest": "24.7.1",
     "np": "4.0.2",
-    "terser-webpack-plugin": "1.2.3",
+    "terser-webpack-plugin": "1.2.4",
     "ts-loader": "5.4.3",
     "tslint": "5.16.0",
     "typescript": "3.4.5",
