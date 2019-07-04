@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/terrestris/geostyler-qgis-parser#readme",
   "dependencies": {
-    "@babel/core": "7.4.5",
+    "@babel/core": "7.5.0",
     "@types/jest": "24.0.15",
     "@types/lodash": "4.14.135",
     "@types/node": "12.0.12",
