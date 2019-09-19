@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/terrestris/geostyler-qgis-parser.git"
+    "url": "git+https://github.com/geostyler/geostyler-qgis-parser.git"
   },
   "keywords": [
     "geostyler",
@@ -23,9 +23,9 @@
   "author": "",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/terrestris/geostyler/issues"
+    "url": "https://github.com/geostyler/geostyler/issues"
   },
-  "homepage": "https://github.com/terrestris/geostyler-qgis-parser#readme",
+  "homepage": "https://github.com/geostyler/geostyler-qgis-parser#readme",
   "dependencies": {
     "@babel/core": "^7.4.5",
     "@types/jest": "^24.0.15",
@@ -47,7 +47,7 @@
     "prebuild": "npm run test",
     "prepublishOnly": "npm run build",
     "pretest": "npm run lint",
-    "release": "np --no-yarn && git push https://github.com/terrestris/geostyler-qgis-parser.git master --tags",
+    "release": "np --no-yarn && git push https://github.com/geostyler/geostyler-qgis-parser.git master --tags",
     "test:watch": "jest --watchAll",
     "test": "jest"
   },
