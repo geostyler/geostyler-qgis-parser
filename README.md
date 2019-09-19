@@ -1,9 +1,9 @@
-[![Greenkeeper badge](https://badges.greenkeeper.io/terrestris/geostyler-qgis-parser.svg)](https://greenkeeper.io/)
-[![Build Status](https://travis-ci.com/terrestris/geostyler-qgis-parser.svg?branch=master)](https://travis-ci.com/terrestris/geostyler-qgis-parser)
-[![Coverage Status](https://coveralls.io/repos/github/terrestris/geostyler-qgis-parser/badge.svg?branch=master)](https://coveralls.io/github/terrestris/geostyler-qgis-parser?branch=master)
+[![Greenkeeper badge](https://badges.greenkeeper.io/geostyler/geostyler-qgis-parser.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.com/geostyler/geostyler-qgis-parser.svg?branch=master)](https://travis-ci.com/geostyler/geostyler-qgis-parser)
+[![Coverage Status](https://coveralls.io/repos/github/geostyler/geostyler-qgis-parser/badge.svg?branch=master)](https://coveralls.io/github/geostyler/geostyler-qgis-parser?branch=master)
 
 # geostyler-qgis-parser
-[GeoStyler](https://github.com/terrestris/geostyler/) Style Parser implementation for QGIS
+[GeoStyler](https://github.com/geostyler/geostyler/) Style Parser implementation for QGIS
 
 ### Issues
-Please provide related issues here https://github.com/terrestris/geostyler/issues
+Please provide related issues here https://github.com/geostyler/geostyler/issues
