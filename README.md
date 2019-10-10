@@ -4,6 +4,3 @@
 
 # geostyler-qgis-parser
 [GeoStyler](https://github.com/geostyler/geostyler/) Style Parser implementation for QGIS
-
-### Issues
-Please provide related issues here https://github.com/geostyler/geostyler/issues
