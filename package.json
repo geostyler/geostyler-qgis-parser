@@ -57,7 +57,7 @@
     "@babel/polyfill": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-typescript": "^7.6.0",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^25.1.0",
     "coveralls": "^3.0.7",
     "jest": "^24.9.0",
     "np": "^5.1.1",
