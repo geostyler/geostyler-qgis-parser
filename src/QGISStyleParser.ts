@@ -23,7 +23,7 @@ import {
   Builder
 } from 'xml2js';
 
-const _get = require('lodash/get');
+import _get from 'lodash/get';
 
 type SymbolizerMap = {
   [key: string]: Symbolizer[]
@@ -305,7 +305,7 @@ export class QGISStyleParser implements StyleParser {
       try {
         const filter = this.cqlParser.read(Object.keys(labelMap)[0]);
         if (filter) {
-          rule.filter = filter;
+          rule.filter = filter as Filter;
         }
       } catch (e) {
         // in the case of made up filters
@@ -327,10 +327,8 @@ export class QGISStyleParser implements StyleParser {
    */
   getFilterFromQmlRule(qmlRule: QmlRule): Filter | undefined {
     const qmlFilter = _get(qmlRule, '$.filter');
-    let filter;
     if (qmlFilter) {
-      filter = this.cqlParser.read(qmlFilter);
-      return filter;
+      return this.cqlParser.read(qmlFilter) as Filter;
     }
     return undefined;
   }
