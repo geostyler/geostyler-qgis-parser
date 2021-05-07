@@ -11,6 +11,7 @@ import point_ranges from '../data/styles/point_ranges';
 import point_external_graphic from '../data/styles/point_external_graphic';
 import polygon_simple from '../data/styles/polygon_simple';
 import no_symbolizer from '../data/styles/no_symbolizer';
+import text_text_buffer from '../data/styles/text_text_buffer';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -163,6 +164,15 @@ describe('QMLStyleParser implements StyleParser', () => {
             expect(qgisStyle).toEqual(qml.trim());
           });
       });
+      it('can write QML with text-buffer', async () => {
+      expect.assertions(2);
+      const qml = fs.readFileSync('./data/qmls/text_text_buffer.qml', 'utf8');
+      return styleParser.writeStyle(text_text_buffer)
+        .then((qgisStyle: string) => {
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
+    });
     });
     describe('LineSymbolizer', () => {
       it('can write a simple QML LineSymbol', async () => {

@@ -971,6 +971,7 @@ export class QGISStyleParser implements StyleParser {
         if (rule.filter) {
           textRule.$.filter = this.cqlParser.write(rule.filter);
         }
+
         qmlRuleList.push(textRule);
       }
     });
