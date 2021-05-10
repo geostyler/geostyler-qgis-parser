@@ -14,6 +14,7 @@
           <prop k="joinstyle" v="round"/>
           <prop k="capstyle" v="square"/>
           <prop k="line_width" v="3"/>
+          <prop k="line_width_unit" v="Pixel"/>
           <prop k="customdash" v="12;12"/>
         </layer>
       </symbol>

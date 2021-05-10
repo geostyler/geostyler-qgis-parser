@@ -768,7 +768,8 @@ export class QGISStyleParser implements StyleParser {
       offset_unit: 'Pixel',
       joinstyle: symbolizer.join,
       capstyle: symbolizer.cap,
-      line_width: symbolizer.width
+      line_width: symbolizer.width,
+      line_width_unit: 'Pixel'
     };
     if (symbolizer.dasharray) {
       qmlProps.customdash = symbolizer.dasharray.join(';');
