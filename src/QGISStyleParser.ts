@@ -785,7 +785,10 @@ export class QGISStyleParser implements StyleParser {
 
   getQmlFillSymbolFromSymbolizer(symbolizer: FillSymbolizer): any {
     const qmlProps = {
-      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      color: this.qmlColorFromHexAndOpacity(
+        symbolizer.color,
+        symbolizer.color ? symbolizer.fillOpacity || symbolizer.opacity : 0
+      ),
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
       outline_style: symbolizer.outlineDasharray ? 'dash' : 'solid',
@@ -793,7 +796,10 @@ export class QGISStyleParser implements StyleParser {
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
       outline_width_unit: 'Pixel',
       customdash: symbolizer.outlineDasharray ? symbolizer.outlineDasharray.join(';') : undefined,
-      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.outlineColor, 1)
+      outline_color: this.qmlColorFromHexAndOpacity(
+        symbolizer.outlineColor,
+        symbolizer.outlineWidth ? symbolizer.outlineOpacity || symbolizer.opacity : 0
+      )
     };
 
     return {
