@@ -964,7 +964,10 @@ export class QGISStyleParser implements StyleParser {
           textRule.settings[0]['text-buffer'] = [{
             $: {
               bufferSize: textSymbolizer.haloWidth || `0`,
-              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1)
+              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1),
+              bufferDraw: 1,
+              bufferSizeUnits: 'Pixel',
+              bufferSizeMapUnitScale: '3x:0,0,0,0,0,0'
             }
           }];
         }
