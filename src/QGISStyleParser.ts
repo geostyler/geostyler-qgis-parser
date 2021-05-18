@@ -902,25 +902,38 @@ export class QGISStyleParser implements StyleParser {
     const type: string = 'RuleRenderer';
     const rules: any[] = [];
     const symbols: any[] = this.getQmlSymbolsFromStyle(geoStylerStyle, rules);
-    return {
-      qgis: {
-        $: {},
-        'renderer-v2': [{
-          $: {
-            type
-          },
-          rules: [{
+    if (rules.length > 0 || symbols.length > 0) {
+      return {
+        qgis: {
+          $: {},
+          'renderer-v2': [{
             $: {
-              key: 'renderer_rules'
+              type
             },
-            rule: rules
-          }],
-          symbols: [{
-            symbol: symbols
+            rules: [{
+              $: {
+                key: 'renderer_rules'
+              },
+              rule: rules
+            }],
+            symbols: [{
+              symbol: symbols
+            }]
           }]
-        }]
-      }
-    };
+        }
+      };
+    } else {
+      return {
+        qgis: {
+          $: {},
+          'renderer-v2': [{
+            $: {
+              type: 'nullSymbol'
+            }
+          }]
+        }
+      };
+    }
   }
 
   convertTextSymbolizerRule(qmlRuleList: any[], rule: Rule) {
@@ -964,7 +977,10 @@ export class QGISStyleParser implements StyleParser {
           textRule.settings[0]['text-buffer'] = [{
             $: {
               bufferSize: textSymbolizer.haloWidth || `0`,
-              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1)
+              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1),
+              bufferDraw: 1,
+              bufferSizeUnits: 'Pixel',
+              bufferSizeMapUnitScale: '3x:0,0,0,0,0,0'
             }
           }];
         }
