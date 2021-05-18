@@ -902,7 +902,7 @@ export class QGISStyleParser implements StyleParser {
     const type: string = 'RuleRenderer';
     const rules: any[] = [];
     const symbols: any[] = this.getQmlSymbolsFromStyle(geoStylerStyle, rules);
-    if (rules.length > 0 && symbols.length > 0) {
+    if (rules.length > 0 || symbols.length > 0) {
       return {
         qgis: {
           $: {},
