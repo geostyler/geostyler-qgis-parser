@@ -34,7 +34,7 @@
     "@types/xml2js": "^0.4.5",
     "color": "^3.1.2",
     "geostyler-cql-parser": "^1.0.0",
-    "geostyler-style": "^3.0.0",
+    "geostyler-style": "^4.0.2",
     "lodash": "^4.17.15",
     "xml2js": "^0.4.23",
     "xmldom": "^0.5.0"
