@@ -37,7 +37,7 @@
     "geostyler-style": "^4.0.2",
     "lodash": "^4.17.15",
     "xml2js": "^0.4.23",
-    "xmldom": "^0.5.0"
+    "xmldom": "^0.6.0"
   },
   "scripts": {
     "build:browser": "webpack --config browser-build.config.js",
@@ -57,7 +57,7 @@
     "@babel/polyfill": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.10.1",
-    "babel-jest": "^26.0.1",
+    "babel-jest": "^27.0.2",
     "coveralls": "^3.1.0",
     "jest": "^26.0.1",
     "np": "^7.4.0",
