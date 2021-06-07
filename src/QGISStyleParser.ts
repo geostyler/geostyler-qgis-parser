@@ -768,7 +768,8 @@ export class QGISStyleParser implements StyleParser {
       offset_unit: 'Pixel',
       joinstyle: symbolizer.join,
       capstyle: symbolizer.cap,
-      line_width: symbolizer.width
+      line_width: symbolizer.width,
+      line_width_unit: 'Pixel'
     };
     if (symbolizer.dasharray) {
       qmlProps.customdash = symbolizer.dasharray.join(';');
@@ -783,8 +784,11 @@ export class QGISStyleParser implements StyleParser {
   }
 
   getQmlFillSymbolFromSymbolizer(symbolizer: FillSymbolizer): any {
+    const fillOpacity = symbolizer.fillOpacity !== undefined ? symbolizer.fillOpacity : symbolizer.opacity;
+    const outlineOpacity = symbolizer.outlineOpacity !== undefined ? symbolizer.outlineOpacity : symbolizer.opacity;
+
     const qmlProps = {
-      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      color: this.qmlColorFromHexAndOpacity(symbolizer.color, fillOpacity),
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
       outline_style: symbolizer.outlineDasharray ? 'dash' : 'solid',
@@ -792,7 +796,7 @@ export class QGISStyleParser implements StyleParser {
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
       outline_width_unit: 'Pixel',
       customdash: symbolizer.outlineDasharray ? symbolizer.outlineDasharray.join(';') : undefined,
-      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.outlineColor, 1)
+      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.outlineColor, outlineOpacity)
     };
 
     return {
@@ -901,25 +905,38 @@ export class QGISStyleParser implements StyleParser {
     const type: string = 'RuleRenderer';
     const rules: any[] = [];
     const symbols: any[] = this.getQmlSymbolsFromStyle(geoStylerStyle, rules);
-    return {
-      qgis: {
-        $: {},
-        'renderer-v2': [{
-          $: {
-            type
-          },
-          rules: [{
+    if (rules.length > 0 || symbols.length > 0) {
+      return {
+        qgis: {
+          $: {},
+          'renderer-v2': [{
             $: {
-              key: 'renderer_rules'
+              type
             },
-            rule: rules
-          }],
-          symbols: [{
-            symbol: symbols
+            rules: [{
+              $: {
+                key: 'renderer_rules'
+              },
+              rule: rules
+            }],
+            symbols: [{
+              symbol: symbols
+            }]
           }]
-        }]
-      }
-    };
+        }
+      };
+    } else {
+      return {
+        qgis: {
+          $: {},
+          'renderer-v2': [{
+            $: {
+              type: 'nullSymbol'
+            }
+          }]
+        }
+      };
+    }
   }
 
   convertTextSymbolizerRule(qmlRuleList: any[], rule: Rule) {
@@ -960,10 +977,13 @@ export class QGISStyleParser implements StyleParser {
         };
 
         if (textSymbolizer.haloColor) {
-          textRule.settings['text-buffer'] = [{
+          textRule.settings[0]['text-buffer'] = [{
             $: {
               bufferSize: textSymbolizer.haloWidth || `0`,
-              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1)
+              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1),
+              bufferDraw: 1,
+              bufferSizeUnits: 'Pixel',
+              bufferSizeMapUnitScale: '3x:0,0,0,0,0,0'
             }
           }];
         }
