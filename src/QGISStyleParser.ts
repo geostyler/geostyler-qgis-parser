@@ -11,7 +11,9 @@ import {
   MarkSymbolizer,
   WellKnownName,
   FillSymbolizer,
-  TextSymbolizer
+  TextSymbolizer,
+  WriteStyleResult,
+  ReadStyleResult
 } from 'geostyler-style';
 
 import { CqlParser } from 'geostyler-cql-parser';
@@ -106,25 +108,31 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    * The readStyle implementation of the GeoStyler-Style StyleParser interface.
-   * It reads a QML as a string and returns a Promise.
-   * The Promise itself resolves with a GeoStyler-Style Style.
+   * It reads a QML as a string and returns a Promise containing the
+   * GeoStyler-Style Style.
    *
    * @param {string} qmlString A QML as a string.
    * @return {Promise} The Promise resolving with the GeoStyler-Style Style
    */
-  readStyle(qmlString: string): Promise<Style> {
-    return new Promise<Style>((resolve, reject) => {
+  readStyle(qmlString: string): Promise<ReadStyleResult> {
+    return new Promise<ReadStyleResult>(resolve => {
       const options = {};
       try {
         parseString(qmlString, options, (err: any, result: any) => {
           if (err) {
-            reject(`Error while parsing qmlString: ${err}`);
+            resolve({
+              errors: [err]
+            });
           }
           const geoStylerStyle: Style = this.qmlObjectToGeoStylerStyle(result);
-          resolve(geoStylerStyle);
+          resolve({
+            output: geoStylerStyle
+          });
         });
       } catch (error) {
-        reject(error);
+        resolve({
+          errors: [error]
+        });
       }
     });
   }
@@ -652,14 +660,14 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    * The writeStyle implementation of the GeoStyler-Style StyleParser interface.
-   * It reads a GeoStyler-Style Style and returns a Promise.
-   * The Promise itself resolves with a QML string.
+   * It reads a GeoStyler-Style Style and returns a Promise containing
+   * the QML string.
    *
    * @param {Style} geoStylerStyle A GeoStyler-Style Style.
-   * @return {Promise} The Promise resolving with the QML as a string.
+   * @return {Promise} The Promise resolving with the QML.
    */
-  writeStyle(geoStylerStyle: Style): Promise<string> {
-    return new Promise<any>((resolve, reject) => {
+  writeStyle(geoStylerStyle: Style): Promise<WriteStyleResult<string>> {
+    return new Promise<WriteStyleResult<string>>(resolve => {
       try {
         const builder = new Builder();
         const qmlObject = this.geoStylerStyleToQmlObject(geoStylerStyle);
@@ -670,9 +678,13 @@ export class QGISStyleParser implements StyleParser {
             `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`,
             `<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>`
           );
-        resolve(qmlString);
+        resolve({
+          output: qmlString
+        });
       } catch (error) {
-        reject(error);
+        resolve({
+          errors: [error]
+        });
       }
     });
   }
