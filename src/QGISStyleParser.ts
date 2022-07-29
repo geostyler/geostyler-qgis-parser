@@ -9,7 +9,6 @@ import {
   IconSymbolizer,
   LineSymbolizer,
   MarkSymbolizer,
-  WellKnownName,
   FillSymbolizer,
   TextSymbolizer,
   WriteStyleResult,
@@ -491,9 +490,7 @@ export class QGISStyleParser implements StyleParser {
 
     const qmlMarkerProps: any = this.qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-    const wellKnownName: string = qmlMarkerProps.name;
-    const wkn = wellKnownName.charAt(0).toUpperCase() + wellKnownName.slice(1);
-    markSymbolizer.wellKnownName = wkn as WellKnownName;
+    markSymbolizer.wellKnownName = qmlMarkerProps.name;
 
     if (qmlMarkerProps.color) {
       markSymbolizer.opacity = this.qmlColorToOpacity(qmlMarkerProps.color);
