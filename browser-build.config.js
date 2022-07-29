@@ -25,10 +25,12 @@ module.exports = {
   module: {
     rules: [{
       test: /\.ts$/,
-      include: path.join(__dirname, "src"),
-      use: [{
-        loader: require.resolve('ts-loader'),
-      }]
+      include: path.join(__dirname, 'src'),
+      use: [
+        {
+          loader: require.resolve('babel-loader')
+        }
+      ]
     }]
   }
 };
