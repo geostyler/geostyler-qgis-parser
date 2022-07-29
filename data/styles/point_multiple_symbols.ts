@@ -6,7 +6,7 @@ const pointMultipleSymbols: Style = {
     name: 'QGIS Simple Symbol',
     symbolizers: [{
       kind: 'Mark',
-      wellKnownName: 'Square',
+      wellKnownName: 'square',
       color: '#4BFF7E',
       radius: 12,
       opacity: 1,
@@ -16,7 +16,7 @@ const pointMultipleSymbols: Style = {
       strokeWidth: 1
     }, {
       kind: 'Mark',
-      wellKnownName: 'Circle',
+      wellKnownName: 'circle',
       color: '#FF0000',
       radius: 2,
       opacity: 1,

@@ -21,7 +21,7 @@ const pointRanges: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#FFFFFF',
           rotate: 0,
@@ -50,7 +50,7 @@ const pointRanges: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#FFBFBF',
           rotate: 0,
@@ -79,7 +79,7 @@ const pointRanges: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#FF8080',
           rotate: 0,
@@ -108,7 +108,7 @@ const pointRanges: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#FF4040',
           rotate: 0,
@@ -137,7 +137,7 @@ const pointRanges: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#FF0000',
           rotate: 0,

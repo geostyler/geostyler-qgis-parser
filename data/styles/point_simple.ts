@@ -6,7 +6,7 @@ const pointSimple: Style = {
     name: 'QGIS Simple Symbol',
     symbolizers: [{
       kind: 'Mark',
-      wellKnownName: 'Circle',
+      wellKnownName: 'circle',
       color: '#BEB297',
       radius: 2,
       opacity: 1,
