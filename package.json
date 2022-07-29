@@ -40,16 +40,16 @@
     "xmldom": "^0.6.0"
   },
   "scripts": {
-    "build:browser": "webpack --config browser-build.config.js",
-    "start:dev": "webpack --mode development --config dev-build.config.js --watch",
-    "build": "tsc -p tsconfig.json && npm run build:browser",
-    "lint": "tslint --project tsconfig.json --config tslint.json && tsc --noEmit --project tsconfig.json",
-    "prebuild": "npm run test",
-    "prepublishOnly": "npm run build",
-    "pretest": "npm run lint",
-    "release": "np --no-yarn && git push https://github.com/geostyler/geostyler-qgis-parser.git master --tags",
-    "test:watch": "jest --watchAll",
-    "test": "jest"
+    "build-browser": "webpack --config browser-build.config.js",
+    "build-dist": "tsc -p tsconfig.json",
+    "build": "npm run build-dist && npm run build-browser",
+    "lint:test:build": "npm run lint && npm run test && npm run build",
+    "lint:test": "npm run lint && npm run test",
+    "lint": "eslint -c .eslintrc.js --ext .ts . && tsc --noEmit --project tsconfig.json",
+    "prepublishOnly": "npm run lint:test:build",
+    "release": "np --no-yarn && git push https://github.com/geostyler/geostyler-qgis-parser.git master",
+    "test-watch": "jest --watchAll",
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.1",
