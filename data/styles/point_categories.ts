@@ -13,7 +13,7 @@ const pointCategories: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#8ADC38',
           rotate: 0,
@@ -34,7 +34,7 @@ const pointCategories: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#EA5D5D',
           rotate: 0,
@@ -55,7 +55,7 @@ const pointCategories: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#69DBDB',
           rotate: 0,
@@ -76,7 +76,7 @@ const pointCategories: Style = {
       symbolizers: [
         {
           kind: 'Mark',
-          wellKnownName: 'Circle',
+          wellKnownName: 'circle',
           opacity: 1,
           color: '#9E6ECD',
           rotate: 0,

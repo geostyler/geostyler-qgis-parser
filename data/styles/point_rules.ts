@@ -18,7 +18,7 @@ const pointRules: Style = {
       strokeColor: '#000000',
       strokeOpacity: 1,
       strokeWidth: 1,
-      wellKnownName: 'Square'
+      wellKnownName: 'square'
     }]
   }, {
     filter: ['&&',
@@ -39,7 +39,7 @@ const pointRules: Style = {
       strokeColor: '#232323',
       strokeOpacity: 1,
       strokeWidth: 1,
-      wellKnownName: 'Circle'
+      wellKnownName: 'circle'
     }]
   }, {
     filter: ['==', 'Bildpositi', 3],
@@ -57,7 +57,7 @@ const pointRules: Style = {
       strokeColor: '#232323',
       strokeOpacity: 1,
       strokeWidth: 1,
-      wellKnownName: 'Circle'
+      wellKnownName: 'circle'
     }]
   }]
 } as Style;

@@ -1,11 +1,13 @@
-const webpack = require("webpack");
+const path = require('path');
 require("@babel/polyfill");
 
 module.exports = {
-  entry: ["./src/QGISStyleParser.ts"],
+  entry: [
+    path.join(__dirname, "src", "QGISStyleParser.ts")
+  ],
   output: {
     filename: "qgisStyleParser.js",
-    path: __dirname + "/browser",
+    path: path.join(__dirname, "browser"),
     library: "GeoStylerQGISParser"
   },
   resolve: {
@@ -13,14 +15,15 @@ module.exports = {
     extensions: [".ts", ".js", ".json"]
   },
   module: {
-    rules: [
-      // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-      {
-        test: /\.ts$/,
-        include: /src/,
-        loader: "awesome-typescript-loader"
-      },
-    ]
+    rules: [{
+      test: /\.ts$/,
+      include: path.join(__dirname, 'src'),
+      use: [
+        {
+          loader: require.resolve('babel-loader')
+        }
+      ]
+    }]
   },
   plugins: [
   ]

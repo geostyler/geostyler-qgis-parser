@@ -9,7 +9,6 @@ import {
   IconSymbolizer,
   LineSymbolizer,
   MarkSymbolizer,
-  WellKnownName,
   FillSymbolizer,
   TextSymbolizer,
   WriteStyleResult,
@@ -28,48 +27,48 @@ import {
 import _get from 'lodash/get';
 
 type SymbolizerMap = {
-  [key: string]: Symbolizer[]
+  [key: string]: Symbolizer[];
 };
 
 type LabelMap = {
-  [filter: string]: TextSymbolizer[]
+  [filter: string]: TextSymbolizer[];
 };
 
 type QmlProp = {
   $: {
-    k: any,
-    v: any
-  }
+    k: any;
+    v: any;
+  };
 };
 
 type QmlRule = {
   $: {
-    filter?: string,
-    scalemaxdenom?: number,
-    scalemindenom?: number,
-    symbol: string,
-    key: string,
-    label: string
-  }
+    filter?: string;
+    scalemaxdenom?: number;
+    scalemindenom?: number;
+    symbol: string;
+    key: string;
+    label: string;
+  };
 };
 
 type QmlCategory = {
   $: {
-    label: string,
-    render: string,
-    symbol: string,
-    value: string
-  }
+    label: string;
+    render: string;
+    symbol: string;
+    value: string;
+  };
 };
 
 type QmlRange = {
   $: {
-    upper: string,
-    lower: string,
-    label: string,
-    symbol: string,
-    render: string,
-  }
+    upper: string;
+    lower: string;
+    label: string;
+    symbol: string;
+    render: string;
+  };
 };
 
 export const outlineStyleDashArrays = {
@@ -491,9 +490,7 @@ export class QGISStyleParser implements StyleParser {
 
     const qmlMarkerProps: any = this.qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-    const wellKnownName: string = qmlMarkerProps.name;
-    const wkn = wellKnownName.charAt(0).toUpperCase() + wellKnownName.slice(1);
-    markSymbolizer.wellKnownName = wkn as WellKnownName;
+    markSymbolizer.wellKnownName = qmlMarkerProps.name;
 
     if (qmlMarkerProps.color) {
       markSymbolizer.opacity = this.qmlColorToOpacity(qmlMarkerProps.color);
@@ -678,8 +675,8 @@ export class QGISStyleParser implements StyleParser {
         const qmlString = builder
           .buildObject(qmlObject)
           .replace(
-            `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`,
-            `<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>`
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+            '<!DOCTYPE qgis PUBLIC \'http://mrcc.com/qgis.dtd\' \'SYSTEM\'>'
           );
         resolve({
           output: qmlString
@@ -983,9 +980,9 @@ export class QGISStyleParser implements StyleParser {
               $: {
                 predefinedPositionOrder: textSymbolizer.anchor ? AnchorMap[textSymbolizer.anchor] :
                   'TR,TL,BR,BL,R,L,TSR,BSR',
-                xOffset: textSymbolizer.offset ? `${textSymbolizer.offset[0]}` : `0`,
-                yOffset: textSymbolizer.offset ? `${textSymbolizer.offset[1]}` : `0`,
-                rotationAngle: textSymbolizer.rotate ? textSymbolizer.rotate : `0`
+                xOffset: textSymbolizer.offset ? `${textSymbolizer.offset[0]}` : '0',
+                yOffset: textSymbolizer.offset ? `${textSymbolizer.offset[1]}` : '0',
+                rotationAngle: textSymbolizer.rotate ? textSymbolizer.rotate : '0'
               }
             }]
           }]
@@ -994,7 +991,7 @@ export class QGISStyleParser implements StyleParser {
         if (textSymbolizer.haloColor) {
           textRule.settings[0]['text-buffer'] = [{
             $: {
-              bufferSize: textSymbolizer.haloWidth || `0`,
+              bufferSize: textSymbolizer.haloWidth || '0',
               bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1),
               bufferDraw: 1,
               bufferSizeUnits: 'Pixel',
