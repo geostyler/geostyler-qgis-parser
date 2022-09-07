@@ -610,7 +610,7 @@ export class QGISStyleParser implements StyleParser {
         default:
           break;
       }
-      
+
       if (qmlMarkerProps.outline_width && 'no' !== outlineStyle) {
         fillSymbolizer.outlineWidth = parseFloat(qmlMarkerProps.outline_width);
       }
