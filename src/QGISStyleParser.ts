@@ -576,39 +576,42 @@ export class QGISStyleParser implements StyleParser {
 
       const qmlMarkerProps: any = qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-      if (qmlMarkerProps.outline_color) {
+      let outlineStyle = qmlMarkerProps?.outline_style || 'solid';
+      if (qmlMarkerProps.outline_color && 'no' !== outlineStyle) {
         fillSymbolizer.outlineColor = this.qmlColorToHex(qmlMarkerProps.outline_color);
       }
-      if (qmlMarkerProps.color) {
+
+      let fillStyle = qmlMarkerProps?.style || 'solid';
+      if (qmlMarkerProps.color && 'solid' === fillStyle) {
         fillSymbolizer.opacity = this.qmlColorToOpacity(qmlMarkerProps.color);
         fillSymbolizer.color = this.qmlColorToHex(qmlMarkerProps.color);
       }
-      if (qmlMarkerProps.outline_style) {
-        switch (qmlMarkerProps.outline_style) {
-          case 'dot':
-            fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dot;
-            break;
-          case 'dash':
-            fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dash;
-            break;
-          case 'dash dot':
-            fillSymbolizer.outlineDasharray = [
-              ...outlineStyleDashArrays.dash,
-              ...outlineStyleDashArrays.dot
-            ];
-            break;
-          case 'dash dot dot':
-            fillSymbolizer.outlineDasharray = [
-              ...outlineStyleDashArrays.dash,
-              ...outlineStyleDashArrays.dot,
-              ...outlineStyleDashArrays.dot
-            ];
-            break;
-          default:
-            break;
-        }
+
+      switch (outlineStyle) {
+        case 'dot':
+          fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dot;
+          break;
+        case 'dash':
+          fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dash;
+          break;
+        case 'dash dot':
+          fillSymbolizer.outlineDasharray = [
+            ...outlineStyleDashArrays.dash,
+            ...outlineStyleDashArrays.dot
+          ];
+          break;
+        case 'dash dot dot':
+          fillSymbolizer.outlineDasharray = [
+            ...outlineStyleDashArrays.dash,
+            ...outlineStyleDashArrays.dot,
+            ...outlineStyleDashArrays.dot
+          ];
+          break;
+        default:
+          break;
       }
-      if (qmlMarkerProps.outline_width) {
+
+      if (qmlMarkerProps.outline_width && 'no' !== outlineStyle) {
         fillSymbolizer.outlineWidth = parseFloat(qmlMarkerProps.outline_width);
       }
 

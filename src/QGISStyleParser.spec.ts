@@ -10,8 +10,10 @@ import point_label from '../data/styles/point_label';
 import point_ranges from '../data/styles/point_ranges';
 import point_external_graphic from '../data/styles/point_external_graphic';
 import polygon_simple from '../data/styles/polygon_simple';
+import polygon_simple_nostyle from '../data/styles/polygon_simple_nostyle';
 import no_symbolizer from '../data/styles/no_symbolizer';
 import text_text_buffer from '../data/styles/text_text_buffer';
+import { defaults } from 'xml2js';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -76,6 +78,15 @@ describe('QMLStyleParser implements StyleParser', () => {
         const { output: geoStylerStyle } = await styleParser.readStyle(qml);
         expect(geoStylerStyle).toBeDefined();
         expect(geoStylerStyle).toEqual(polygon_simple);
+      });
+    });
+    describe('FillSymbolizer with no style', () => {
+      it('can read a simple QML FillSymbol with no style', async () => {
+        expect.assertions(2);
+        const qml = fs.readFileSync('./data/qmls/polygon_simple_nostyle.qml', 'utf8');
+        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+        expect(geoStylerStyle).toBeDefined();
+        expect(geoStylerStyle).toEqual(polygon_simple_nostyle);
       });
     });
     describe('Filter Parsing', () => {
