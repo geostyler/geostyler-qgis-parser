@@ -140,7 +140,7 @@ export class QGISStyleParser implements StyleParser {
    *
    * @param qmlLabel
    */
-  parseLabelTemplates(qmlLabel: string): string {
+  parseLabelTemplatesPlain(qmlLabel: string): string {
     let geostylerLabel: string = '';
     const qmlLabelArray = qmlLabel.split('||');
 
@@ -153,6 +153,16 @@ export class QGISStyleParser implements StyleParser {
       }
     });
 
+    return geostylerLabel;
+  }
+
+  /**
+   * 
+   * @param fieldName 
+   */
+  parseLabelTemplatesWithExpression(qmlLabel: string): string {
+    //TODO: use geostyler-cql-parser to parse the expression
+    let geostylerLabel: string = 'Labels with expressions are not supported';
     return geostylerLabel;
   }
 
@@ -402,8 +412,11 @@ export class QGISStyleParser implements StyleParser {
       textSymbolizer.color = this.qmlColorToHex(styleProperties.textColor);
     }
     if (styleProperties.fieldName) {
-      // TODO parse fieldName templates like: "'ID: ' || ID"
-      textSymbolizer.label = this.parseLabelTemplates(styleProperties.fieldName);
+      if (parseInt(styleProperties.isExpression) === 1) {
+        textSymbolizer.label = this.parseLabelTemplatesWithExpression(styleProperties.fieldName);
+      } else {
+        textSymbolizer.label = this.parseLabelTemplatesPlain(styleProperties.fieldName);
+      }
     }
     if (styleProperties.fontSize) {
       textSymbolizer.size = parseFloat(styleProperties.fontSize);
