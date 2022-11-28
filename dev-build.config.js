@@ -12,7 +12,12 @@ module.exports = {
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: [".ts", ".js", ".json"]
+    extensions: [".ts", ".js", ".json"],
+    fallback: {
+      buffer: false,
+      fs: false,
+      path: false
+    }
   },
   module: {
     rules: [{
