@@ -12,12 +12,12 @@ import {
   FillSymbolizer,
   TextSymbolizer,
   WriteStyleResult,
-  ReadStyleResult
+  ReadStyleResult,
+  isGeoStylerFunction
 } from 'geostyler-style';
 
 import { CqlParser } from 'geostyler-cql-parser';
-
-const Color = require('color');
+import Color from 'color';
 
 import {
   parseString,
@@ -190,7 +190,8 @@ export class QGISStyleParser implements StyleParser {
    * @param opacity
    */
   qmlColorFromHexAndOpacity(hex?: string, opacity?: number): string | undefined {
-    const colorArray = Color(hex).alpha(opacity).rgb().array();
+    opacity = Number.isNaN(Number(opacity)) ? 1 : opacity;
+    const colorArray = Color(hex).alpha(opacity || 1).rgb().array();
     const alpha = colorArray[3] === undefined || isNaN(colorArray[3]) ? 255
       : colorArray[3] === 0 ? 0
         : 255 * colorArray[3];
@@ -351,10 +352,10 @@ export class QGISStyleParser implements StyleParser {
     const minScaleDenominator = _get(qmlRule, '$.scalemindenom');
     let scaleDenominator: ScaleDenominator = <ScaleDenominator> {};
     if (minScaleDenominator) {
-      scaleDenominator.min = parseFloat(minScaleDenominator);
+      scaleDenominator.min = Number(minScaleDenominator);
     }
     if (maxScaleDenominator) {
-      scaleDenominator.max = parseFloat(maxScaleDenominator);
+      scaleDenominator.max = Number(maxScaleDenominator);
     }
 
     return (scaleDenominator.min || scaleDenominator.max)
@@ -694,7 +695,7 @@ export class QGISStyleParser implements StyleParser {
    * @param filter
    */
   getQmlFilterFromFilter(filter: Filter): string | undefined {
-    return this.cqlParser.write(filter);
+    return this.cqlParser.write(filter) as string;
   }
 
   /**
@@ -773,8 +774,13 @@ export class QGISStyleParser implements StyleParser {
    *
    */
   getQmlLineSymbolFromSymbolizer(symbolizer: LineSymbolizer): any {
+    let lineColor;
+    if (!isGeoStylerFunction(symbolizer.color) && !isGeoStylerFunction(symbolizer.opacity)) {
+      lineColor = this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity);
+    }
+
     const qmlProps: any = {
-      line_color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      line_color: lineColor,
       offset: symbolizer.perpendicularOffset,
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
@@ -798,9 +804,17 @@ export class QGISStyleParser implements StyleParser {
   getQmlFillSymbolFromSymbolizer(symbolizer: FillSymbolizer): any {
     const fillOpacity = symbolizer.fillOpacity !== undefined ? symbolizer.fillOpacity : symbolizer.opacity;
     const outlineOpacity = symbolizer.outlineOpacity !== undefined ? symbolizer.outlineOpacity : symbolizer.opacity;
+    let color;
+    if (!isGeoStylerFunction(symbolizer.color) && !isGeoStylerFunction(fillOpacity)) {
+      color = this.qmlColorFromHexAndOpacity(symbolizer.color, fillOpacity);
+    }
+    let outlineColor;
+    if (!isGeoStylerFunction(symbolizer.outlineColor) && !isGeoStylerFunction(outlineOpacity)) {
+      outlineColor = this.qmlColorFromHexAndOpacity(symbolizer.outlineColor, outlineOpacity);
+    }
 
     const qmlProps = {
-      color: this.qmlColorFromHexAndOpacity(symbolizer.color, fillOpacity),
+      color: color,
       offset_map_unit_scale: '3x:0,0,0,0,0,0',
       offset_unit: 'Pixel',
       outline_style: symbolizer.outlineDasharray ? 'dash' : 'solid',
@@ -808,7 +822,7 @@ export class QGISStyleParser implements StyleParser {
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
       outline_width_unit: 'Pixel',
       customdash: symbolizer.outlineDasharray ? symbolizer.outlineDasharray.join(';') : undefined,
-      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.outlineColor, outlineOpacity)
+      outline_color: outlineColor
     };
 
     return {
@@ -848,9 +862,13 @@ export class QGISStyleParser implements StyleParser {
   }
 
   getQmlMarkSymbolFromIconSymbolizer(symbolizer: IconSymbolizer): any {
+    let color;
+    if (!isGeoStylerFunction(symbolizer.color) && !isGeoStylerFunction(symbolizer.opacity)) {
+      color = this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity);
+    }
     const qmlProps = {
       angle: symbolizer.rotate || 0,
-      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      color: color,
       name: symbolizer.image,
       size: symbolizer.size,
       size_map_unit_scale: '3x:0,0,0,0,0,0',
@@ -869,16 +887,28 @@ export class QGISStyleParser implements StyleParser {
    *
    */
   getQmlMarkSymbolFromSymbolizer(symbolizer: MarkSymbolizer): any {
+    let color;
+    if (!isGeoStylerFunction(symbolizer.color) && !isGeoStylerFunction(symbolizer.opacity)) {
+      color = this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity);
+    }
+    let outlineColor;
+    if (!isGeoStylerFunction(symbolizer.strokeColor) && !isGeoStylerFunction(symbolizer.strokeOpacity)) {
+      outlineColor = this.qmlColorFromHexAndOpacity(symbolizer.strokeColor, symbolizer.strokeOpacity);
+    }
+    let size;
+    if (!isGeoStylerFunction(symbolizer.radius)) {
+      size = symbolizer.radius ? symbolizer.radius * 2 : undefined;
+    }
     const qmlProps = {
       angle: symbolizer.rotate || 0,
-      color: this.qmlColorFromHexAndOpacity(symbolizer.color, symbolizer.opacity),
+      color: color,
       name: symbolizer.wellKnownName.toLowerCase(),
-      outline_color: this.qmlColorFromHexAndOpacity(symbolizer.strokeColor, symbolizer.strokeOpacity),
+      outline_color: outlineColor,
       outline_style: 'solid',
       outline_width: symbolizer.strokeWidth || 0,
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
       outline_width_unit: 'Pixel',
-      size: symbolizer.radius ? symbolizer.radius * 2 : undefined,
+      size: size,
       size_map_unit_scale: '3x:0,0,0,0,0,0',
       size_unit: 'Pixel'
     };
@@ -956,16 +986,20 @@ export class QGISStyleParser implements StyleParser {
     rule.symbolizers.forEach(symbolizer => {
       if (symbolizer.kind === 'Text') {
         textSymbolizer = symbolizer as TextSymbolizer;
+        let textColor;
+        if (textSymbolizer.color && !isGeoStylerFunction(textSymbolizer.color)) {
+          textColor = this.qmlColorFromHexAndOpacity(textSymbolizer.color, 1);
+        }
         const textStyleAttributes: any = {
           fontSize: textSymbolizer.size || 12,
           fontLetterSpacing: textSymbolizer.letterSpacing || 0,
           multilineHeight: textSymbolizer.lineHeight !== undefined ? textSymbolizer.lineHeight : 1,
-          textColor: textSymbolizer.color ? this.qmlColorFromHexAndOpacity(textSymbolizer.color, 1) : '0,0,0,255'
+          textColor: textSymbolizer.color ? textColor : '0,0,0,255'
         };
         if (textSymbolizer.font) {
           textStyleAttributes.fontFamily = textSymbolizer.font[0];
         }
-        if (textSymbolizer.label) {
+        if (textSymbolizer.label && !isGeoStylerFunction(textSymbolizer.label )) {
           textStyleAttributes.fieldName = textSymbolizer.label.replace('{{', '').replace('}}', '');
         }
         const textRule: any = {
@@ -989,10 +1023,14 @@ export class QGISStyleParser implements StyleParser {
         };
 
         if (textSymbolizer.haloColor) {
+          let bufferColor;
+          if (!isGeoStylerFunction(textSymbolizer.haloColor) && !isGeoStylerFunction(textSymbolizer.haloOpacity)) {
+            bufferColor = this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, textSymbolizer.haloOpacity);
+          }
           textRule.settings[0]['text-buffer'] = [{
             $: {
               bufferSize: textSymbolizer.haloWidth || '0',
-              bufferColor: this.qmlColorFromHexAndOpacity(textSymbolizer.haloColor, 1),
+              bufferColor: bufferColor,
               bufferDraw: 1,
               bufferSizeUnits: 'Pixel',
               bufferSizeMapUnitScale: '3x:0,0,0,0,0,0'
