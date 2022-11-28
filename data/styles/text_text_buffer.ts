@@ -5,7 +5,9 @@ const labelSample: Style = {
   rules: [
     {
       name: '',
-      scaleDenominator: { max: 1000 },
+      scaleDenominator: {
+        max: 1000
+      },
       symbolizers: [
         {
           kind: 'Text',
