@@ -49,6 +49,13 @@ type QmlProp = {
   };
 };
 
+type QmlOption = {
+  $: {
+    name: string;
+    value: string;
+  };
+};
+
 type QmlRule = {
   $: {
     filter?: string;
@@ -173,11 +180,16 @@ export class QGISStyleParser implements StyleParser {
    */
   qmlSymbolizerLayerPropsToObject(qmlSymbolizer: any) {
     const qmlMarkerProps: any = {};
-    qmlSymbolizer.prop.forEach((prop: QmlProp) => {
-      const key = prop.$.k;
-      const value = prop.$.v;
+    qmlSymbolizer.Option[0].Option.forEach((option: QmlOption) => {
+      const key = option.$.name;
+      const value = option.$.value;
       qmlMarkerProps[key] = value;
     });
+    // qmlSymbolizer.prop.forEach((prop: QmlProp) => {
+    //   const key = prop.$.k;
+    //   const value = prop.$.v;
+    //   qmlMarkerProps[key] = value;
+    // });
     return qmlMarkerProps;
   }
 
@@ -841,7 +853,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleFill'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolProps(qmlProps)
     };
   }
 
@@ -891,7 +903,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SvgMarker'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolProps(qmlProps)
     };
   }
 
@@ -929,7 +941,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleMarker'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolProps(qmlProps)
     };
   }
 
@@ -937,16 +949,16 @@ export class QGISStyleParser implements StyleParser {
    *
    * @param properties
    */
-  propsObjectToQmlSymbolProps(properties: any): QmlProp[] {
+  propsObjectToQmlSymbolProps(properties: any): QmlOption[] {
     return Object.keys(properties).map(k => {
       const v = properties[k];
       return {
         $: {
-          k,
-          v
+          name: k,
+          value: v
         }
       };
-    }).filter(s => s.$.v !== undefined);
+    }).filter(s => s.$.value !== undefined);
   }
 
   /**
@@ -974,6 +986,7 @@ export class QGISStyleParser implements StyleParser {
               rule: rules
             }],
             symbols: [{
+              foo: 'bar',
               symbol: symbols
             }]
           }]
