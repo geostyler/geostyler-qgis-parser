@@ -1,9 +1,9 @@
-[![Greenkeeper badge](https://badges.greenkeeper.io/geostyler/geostyler-qgis-parser.svg)](https://greenkeeper.io/)
-[![Build Status](https://travis-ci.com/geostyler/geostyler-qgis-parser.svg?branch=master)](https://travis-ci.com/geostyler/geostyler-qgis-parser)
-[![Coverage Status](https://coveralls.io/repos/github/geostyler/geostyler-qgis-parser/badge.svg?branch=master)](https://coveralls.io/github/geostyler/geostyler-qgis-parser?branch=master)
-
 # geostyler-qgis-parser
 [GeoStyler](https://github.com/geostyler/geostyler/) Style Parser implementation for QGIS
+
+## :rocket: GeoStyler Code Sprint 2024
+
+We are happy to announce the third GeoStyler Code Sprint from **17.-21.06.2024** in Paris. Be part of it! More infos on https://geostyler.org/.
 
 ## <a name="funding"></a>Funding & financial sponsorship
 
