@@ -42,10 +42,6 @@ type SymbolizerMap = {
   [key: string]: Symbolizer[];
 };
 
-type LabelMap = {
-  [filter: string]: TextSymbolizer[];
-};
-
 type QmlProp = {
   $: {
     k: any;
@@ -288,6 +284,7 @@ export class QGISStyleParser implements StyleParser {
     return color.hex();
   }
 
+  static readonly DEFAULT_RULE_NAME: string = 'QGIS Simple Symbol';
   /**
    * Get the GeoStyler-Style Rule from an QML Object (created with xml2js).
    *
@@ -303,14 +300,16 @@ export class QGISStyleParser implements StyleParser {
     const qmlLabeling = get(qmlObject, 'qgis.labeling.[0]');
     let rules: Rule[] = [];
     let symbolizerMap: SymbolizerMap = {};
-    let labelMap: LabelMap = {};
+    let labelRules: Rule[] = [];
 
     if (Array.isArray(qmlSymbols)) {
       symbolizerMap = this.parseQmlSymbolizers(qmlSymbols);
     }
 
     if (qmlLabeling) {
-      labelMap = this.parseQmlLabeling(qmlLabeling);
+      // for labelling, there isn't a separation between rules ans symbolizers. So we get the text-rules here and will
+      // combine them with the symbolizer rules later.
+      labelRules = this.parseQmlLabelingRules(qmlLabeling);
     }
 
     if (Array.isArray(qmlRules) && qmlRules.length > 0) {
@@ -369,25 +368,34 @@ export class QGISStyleParser implements StyleParser {
       });
     } else {
       const symbolizers = symbolizerMap[Object.keys(symbolizerMap)[0]] || [];
-      const labels = labelMap[Object.keys(labelMap)[0]] || [];
+      // there are rare cases where we can combine geometry-symbolizers ans labelling-symbolizers into one rule, because
+      // QGIS treats them complety separated. The only exception is if both symbols and labels are not rule-based.
+      const combinedLabelRule = labelRules && labelRules.length===1 && qmlLabeling.$.type==='simple'
+        ? labelRules[0] : null;
+      const labelSymbolizers = combinedLabelRule ? combinedLabelRule.symbolizers : [];
       const rule: Rule = {
-        name: 'QGIS Simple Symbol',
+        name: QGISStyleParser.DEFAULT_RULE_NAME,
         symbolizers:  [
           ...symbolizers,
-          ...labels
+          ...labelSymbolizers
         ]
       };
 
-      try {
-        const filter = this.cqlParser.read(Object.keys(labelMap)[0]);
-        if (filter) {
-          rule.filter = filter as Filter;
-        }
-      } catch (e) {
-        // in the case of made up filters
+      // if rule combines symbolizers and labels, we dont't need to append the text-rules later
+      if (combinedLabelRule) {
+        labelRules = [];
       }
 
-      rules.push(rule);
+      // write rule only if it has some symbolizers. As in test-case point_label.qml, there aren't
+      // symbolizers, except some for the label which cannot be integrated here.
+      if (rule.symbolizers.length > 0) {
+        rules.push(rule);
+      }
+    }
+
+    // Additionally, deliver rules for texts
+    if (labelRules) {
+      rules.push(...labelRules);
     }
 
     return rules;
@@ -434,27 +442,58 @@ export class QGISStyleParser implements StyleParser {
 
   /**
    *
+   * Parses a QGIS Labeling object into GeoStyler Rules.
    * @param qmlLabels
    */
-  parseQmlLabeling(qmlLabeling: any): LabelMap {
+  parseQmlLabelingRules(qmlLabeling: any): Rule[] {
     const type = qmlLabeling.$.type;
-    const labelMap: LabelMap = {};
+    let result: Rule[] = [];
 
     if (type === 'rule-based') {
       const rules = get(qmlLabeling, 'rules[0].rule');
+      // to fullfill the existing test 'can read some basics of the QML Labeling for Points', use a constant name if
+      // there is only one labelling-rule which hasn't an own description. One should consider to use the filter
+      const uniqueRuleName = rules.length <= 1 ? QGISStyleParser.DEFAULT_RULE_NAME : undefined;
       rules.forEach((rule: QmlRule, index: number) => {
         const settings = get(rule, 'settings[0]');
         const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
-        labelMap[rule.$.filter || index] = [textSymbolizer];
+        const filter: Filter | undefined = this.getFilterFromQmlRule(rule);
+        const scaleDenominator: ScaleDenominator | undefined = this.getScaleDenominatorFromRule(rule);
+
+        // qml text-rules seems to use an 'description'-attribute instead of a 'label'-attribute for symbolization-rules
+        const name = get(rule.$, 'description') || rule.$.label || uniqueRuleName || rule.$.filter;
+
+        let resultRule: Rule = <Rule> {
+          name
+        };
+        if (filter) {
+          resultRule.filter = filter;
+        }
+        if (scaleDenominator) {
+          resultRule.scaleDenominator = scaleDenominator;
+        }
+        if (textSymbolizer) {
+          resultRule.symbolizers = [textSymbolizer];
+        }
+
+        result.push(resultRule);
       });
     }
     if (type === 'simple') {
       const settings = get(qmlLabeling, 'settings[0]');
       const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
-      labelMap.a = [textSymbolizer];
+      const name = QGISStyleParser.DEFAULT_RULE_NAME;
+      let resultRule: Rule = <Rule> {
+        name
+      };
+      if (textSymbolizer) {
+        resultRule.symbolizers = [textSymbolizer];
+      }
+
+      result.push(resultRule);
     }
 
-    return labelMap;
+    return result;
   }
 
   /**
