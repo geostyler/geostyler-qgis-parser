@@ -289,6 +289,51 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
+   * Get the anchor-mode from an QML quadOffset-entry.
+   *
+   * @param {number} qmlQuadOffset The QML quadOffset-entry
+   */
+  qmlAnchorPositionToAnchor(qmlQuadOffset: number): 'center' | 'left' | 'right' | 'top' | 'bottom' |
+   'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | undefined {
+
+    // qgis stores these values as numbers. The internal meaning is defined by the Qgis::LabelQuadrantPosition-enum
+    // in qgis.h (AboveLeft=0, Above=1, AboveRight=2, Left=3 ...)
+    switch (qmlQuadOffset) {
+      case 0: return 'top-left';
+      case 1: return 'top';
+      case 2: return 'top-right';
+      case 3: return 'left';
+      case 4: return 'center';
+      case 5: return 'right';
+      case 6: return 'bottom-left';
+      case 7: return 'bottom';
+      case 8: return 'bottom-right';
+      default: return undefined;
+    }
+  }
+
+  /**
+   * Get the label-placement setting from an QML placement-entry.
+   *
+   * @param {number} qmlPlacement The QML qmlPlacement-entry
+   */
+  qmlLabelPlacementToSymbolizerPlacement(qmlPlacement: number): 'point' | 'line' | 'line-center' | undefined {
+
+    // qgis stores these values as numbers. The internal meaning is defined by the Qgis::LabelPlacement-enum
+    // in qgis.h (AroundPoint=0, OverPoint=1, Line=2, Curved=3, Horizontal=4 ...)
+    // In geostyle we have much lesser options for text-placement than qgis has. The most important thing here
+    // is to distinguish between horizontal and geometry-aligned placements. The difficulty is on how this
+    // setting is interpreted later.
+    switch (qmlPlacement) {
+      case 2: // Line = Arranges candidates parallel to a generalised line...
+      case 3: return 'line'; // Curved = Arranges candidates following the curvature of a line feature...
+      case 1: return 'point'; // OverPoint = Arranges candidates over a point (or centroid of a polygon),
+      // or at a preset offset from the point.
+      default: return undefined; // in all other we dont't set it so letting the exporter decide what to do with it.
+    }
+  }
+
+  /**
    * Get the GeoStyler-Style Rule from an QML Object (created with xml2js).
    *
    * @param {object} qmlObject The QML object representation (created with xml2js)
@@ -493,6 +538,13 @@ export class QGISStyleParser implements StyleParser {
         parseFloat(placementProperties.yOffset)
       ];
     }
+    if (placementProperties.quadOffset) {
+      textSymbolizer.anchor = this.qmlAnchorPositionToAnchor(Number(placementProperties.quadOffset));
+    }
+    if (placementProperties.placement) {
+      textSymbolizer.placement = this.qmlLabelPlacementToSymbolizerPlacement(Number(placementProperties.placement));
+    }
+
     return textSymbolizer;
   }
 
