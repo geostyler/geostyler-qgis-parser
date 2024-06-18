@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources 🔰
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 👷🏻
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prepare git config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies ⏬
+        run: npm ci
+
+      - name: Build artifacts 🏗️
+        run: npm run build
+
+      - name: Release 🚀
+        uses: cycjimmy/semantic-release-action@v4.1.0
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
