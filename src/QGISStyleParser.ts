@@ -987,6 +987,7 @@ export class QGISStyleParser implements StyleParser {
       if (symbolizer.kind === 'Text') {
         textSymbolizer = symbolizer as TextSymbolizer;
         let textColor;
+        let predefinedPositionOrder;
         if (textSymbolizer.color && !isGeoStylerFunction(textSymbolizer.color)) {
           textColor = this.qmlColorFromHexAndOpacity(textSymbolizer.color, 1);
         }
@@ -1002,6 +1003,15 @@ export class QGISStyleParser implements StyleParser {
         if (textSymbolizer.label && !isGeoStylerFunction(textSymbolizer.label )) {
           textStyleAttributes.fieldName = textSymbolizer.label.replace('{{', '').replace('}}', '');
         }
+        if (
+          textSymbolizer.anchor
+          && !isGeoStylerFunction(textSymbolizer.anchor)
+          && textSymbolizer.anchor !== 'center'
+        ) {
+          predefinedPositionOrder = AnchorMap[textSymbolizer.anchor];
+        } else {
+          predefinedPositionOrder = 'TR,TL,BR,BL,R,L,TSR,BSR';
+        }
         const textRule: any = {
           $: {
             key: `labeling_rule_${qmlRuleList.length}`
@@ -1012,8 +1022,7 @@ export class QGISStyleParser implements StyleParser {
             }],
             placement: [{
               $: {
-                predefinedPositionOrder: textSymbolizer.anchor ? AnchorMap[textSymbolizer.anchor] :
-                  'TR,TL,BR,BL,R,L,TSR,BSR',
+                predefinedPositionOrder,
                 xOffset: textSymbolizer.offset ? `${textSymbolizer.offset[0]}` : '0',
                 yOffset: textSymbolizer.offset ? `${textSymbolizer.offset[1]}` : '0',
                 rotationAngle: textSymbolizer.rotate ? textSymbolizer.rotate : '0'
