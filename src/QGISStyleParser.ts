@@ -24,7 +24,15 @@ import {
   Builder
 } from 'xml2js';
 
-import _get from 'lodash/get';
+const get = (obj: any, path: any, defaultValue = undefined) => {
+  const travel = (regexp: RegExp) =>
+    String.prototype.split
+      .call(path, regexp)
+      .filter(Boolean)
+      .reduce((res: any, key: any) => (res !== null && res !== undefined ? res[key] : res), obj);
+  const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
+  return result === undefined || result === obj ? defaultValue : result;
+};
 
 type SymbolizerMap = {
   [key: string]: Symbolizer[];
@@ -227,12 +235,12 @@ export class QGISStyleParser implements StyleParser {
    * @return {Rule} The GeoStyler-Style Rule
    */
   getRulesFromQmlObject(qmlObject: any): Rule[] {
-    const qmlRenderer = _get(qmlObject, 'qgis.renderer-v2.[0]');
-    const qmlRules: QmlRule[] = _get(qmlRenderer, 'rules[0].rule');
-    const qmlCategories: QmlCategory[] = _get(qmlRenderer, 'categories[0].category');
-    const qmlRanges: QmlRange[] = _get(qmlRenderer, 'ranges[0].range');
-    const qmlSymbols = _get(qmlRenderer, 'symbols[0].symbol');
-    const qmlLabeling = _get(qmlObject, 'qgis.labeling.[0]');
+    const qmlRenderer = get(qmlObject, 'qgis.renderer-v2.[0]');
+    const qmlRules: QmlRule[] = get(qmlRenderer, 'rules[0].rule');
+    const qmlCategories: QmlCategory[] = get(qmlRenderer, 'categories[0].category');
+    const qmlRanges: QmlRange[] = get(qmlRenderer, 'ranges[0].range');
+    const qmlSymbols = get(qmlRenderer, 'symbols[0].symbol');
+    const qmlLabeling = get(qmlObject, 'qgis.labeling.[0]');
     let rules: Rule[] = [];
     let symbolizerMap: SymbolizerMap = {};
     let labelMap: LabelMap = {};
@@ -265,7 +273,7 @@ export class QGISStyleParser implements StyleParser {
         rules.push(rule);
       });
     } else if (Array.isArray(qmlCategories) && qmlCategories.length > 0) {
-      const attribute = _get(qmlObject, 'qgis.renderer-v2.[0].$.attr');
+      const attribute = get(qmlObject, 'qgis.renderer-v2.[0].$.attr');
       qmlCategories.forEach((qmlCategory: QmlCategory, index: number) => {
         const value = qmlCategory.$.value;
         const filter = ['==', attribute, value];
@@ -280,7 +288,7 @@ export class QGISStyleParser implements StyleParser {
         rules.push(rule);
       });
     } else if (Array.isArray(qmlRanges) && qmlRanges.length > 0) {
-      const attribute = _get(qmlObject, 'qgis.renderer-v2.[0].$.attr');
+      const attribute = get(qmlObject, 'qgis.renderer-v2.[0].$.attr');
       qmlRanges.forEach((qmlRange: QmlRange, index: number) => {
         const name = qmlRange.$.label;
         const lower = qmlRange.$.lower;
@@ -334,7 +342,7 @@ export class QGISStyleParser implements StyleParser {
    * @return {Filter} The GeoStyler-Style Filter
    */
   getFilterFromQmlRule(qmlRule: QmlRule): Filter | undefined {
-    const qmlFilter = _get(qmlRule, '$.filter');
+    const qmlFilter = get(qmlRule, '$.filter');
     if (qmlFilter) {
       return this.cqlParser.read(qmlFilter) as Filter;
     }
@@ -348,8 +356,8 @@ export class QGISStyleParser implements StyleParser {
    * @return {ScaleDenominator} The GeoStyler-Style ScaleDenominator
    */
   getScaleDenominatorFromRule(qmlRule: QmlRule): ScaleDenominator | undefined {
-    const maxScaleDenominator = _get(qmlRule, '$.scalemaxdenom');
-    const minScaleDenominator = _get(qmlRule, '$.scalemindenom');
+    const maxScaleDenominator = get(qmlRule, '$.scalemaxdenom');
+    const minScaleDenominator = get(qmlRule, '$.scalemindenom');
     let scaleDenominator: ScaleDenominator = <ScaleDenominator> {};
     if (minScaleDenominator) {
       scaleDenominator.min = Number(minScaleDenominator);
@@ -372,15 +380,15 @@ export class QGISStyleParser implements StyleParser {
     const labelMap: LabelMap = {};
 
     if (type === 'rule-based') {
-      const rules = _get(qmlLabeling, 'rules[0].rule');
+      const rules = get(qmlLabeling, 'rules[0].rule');
       rules.forEach((rule: QmlRule, index: number) => {
-        const settings = _get(rule, 'settings[0]');
+        const settings = get(rule, 'settings[0]');
         const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
         labelMap[rule.$.filter || index] = [textSymbolizer];
       });
     }
     if (type === 'simple') {
-      const settings = _get(qmlLabeling, 'settings[0]');
+      const settings = get(qmlLabeling, 'settings[0]');
       const textSymbolizer = this.getTextSymbolizerFromLabelSettings(settings);
       labelMap.a = [textSymbolizer];
     }
@@ -396,8 +404,8 @@ export class QGISStyleParser implements StyleParser {
     let textSymbolizer: TextSymbolizer = {
       kind: 'Text',
     } as TextSymbolizer;
-    const styleProperties = _get(settings, 'text-style[0].$');
-    const placementProperties = _get(settings, 'placement[0].$');
+    const styleProperties = get(settings, 'text-style[0].$');
+    const placementProperties = get(settings, 'placement[0].$');
 
     if (styleProperties.textColor) {
       textSymbolizer.color = this.qmlColorToHex(styleProperties.textColor);
@@ -434,8 +442,8 @@ export class QGISStyleParser implements StyleParser {
     const symbolizerMap: SymbolizerMap = {};
 
     qmlSymbolizers.forEach((qmlSymbolizer: any) => {
-      const symbolizerKey = _get(qmlSymbolizer, '$.name');
-      const symbolizerType = _get(qmlSymbolizer, '$.type');
+      const symbolizerKey = get(qmlSymbolizer, '$.name');
+      const symbolizerType = get(qmlSymbolizer, '$.type');
       let symbolizers;
       switch (symbolizerType) {
         case 'marker':
