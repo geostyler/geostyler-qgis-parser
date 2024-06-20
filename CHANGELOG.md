@@ -1,3 +1,15 @@
+## [2.1.0-next.1](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.0.1...v2.1.0-next.1) (2024-06-20)
+
+
+### Features
+
+* prepare next major release ([530fa1e](https://github.com/geostyler/geostyler-qgis-parser/commit/530fa1ee9cde964eec808f543a6661ae4255e051))
+
+
+### Bug Fixes
+
+* **deps:** update dependency geostyler-style to v8 ([1469169](https://github.com/geostyler/geostyler-qgis-parser/commit/1469169e3f1f28a23c3f32ebd6c4b398d35d814f))
+
 ## [2.0.1](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.0.0...v2.0.1) (2024-06-18)
 
 
