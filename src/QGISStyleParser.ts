@@ -121,28 +121,31 @@ export class QGISStyleParser implements StyleParser {
    * @param {string} qmlString A QML as a string.
    * @return {Promise} The Promise resolving with the GeoStyler-Style Style
    */
-  readStyle(qmlString: string): Promise<ReadStyleResult> {
-    return new Promise<ReadStyleResult>(resolve => {
-      const options = {};
-      try {
-        parseString(qmlString, options, (err: any, result: any) => {
-          if (err) {
-            resolve({
-              errors: [err]
-            });
-          }
-          const geoStylerStyle: Style = this.qmlObjectToGeoStylerStyle(result);
-          resolve({
-            output: geoStylerStyle
-          });
-        });
-      } catch (error) {
-        resolve({
-          errors: [error]
-        });
-      }
-    });
-  }
+  readStyle = async (qmlString: string): Promise<ReadStyleResult> => {
+    const options = {};
+    try {
+      let readResult;
+      parseString(qmlString, options, (err: any, result: any) => {
+        if (err) {
+          readResult = {
+            errors: [err]
+          };
+          return;
+        }
+        const geoStylerStyle: Style = this.qmlObjectToGeoStylerStyle(result);
+        readResult = {
+          output: geoStylerStyle
+        };
+      });
+      return readResult || {
+        errors: []
+      };
+    } catch (error) {
+      return {
+        errors: [error]
+      };
+    }
+  };
 
   /**
    *
@@ -344,7 +347,8 @@ export class QGISStyleParser implements StyleParser {
   getFilterFromQmlRule(qmlRule: QmlRule): Filter | undefined {
     const qmlFilter = get(qmlRule, '$.filter');
     if (qmlFilter) {
-      return this.cqlParser.read(qmlFilter) as Filter;
+      const f = this.cqlParser.read(qmlFilter) as Filter;
+      return f;
     }
     return undefined;
   }
