@@ -1,3 +1,10 @@
+## [2.1.0-next.2](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.1.0-next.1...v2.1.0-next.2) (2024-06-21)
+
+
+### Bug Fixes
+
+* update cql parser version ([1d80c02](https://github.com/geostyler/geostyler-qgis-parser/commit/1d80c02e1009c3c41b920621054f5712d22bf177))
+
 ## [2.1.0-next.1](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.0.1...v2.1.0-next.1) (2024-06-20)
 
 
