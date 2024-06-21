@@ -1,3 +1,10 @@
+## [2.1.0-next.3](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.1.0-next.2...v2.1.0-next.3) (2024-06-21)
+
+
+### Bug Fixes
+
+* fix commitlint ([1e9702d](https://github.com/geostyler/geostyler-qgis-parser/commit/1e9702da04686b845d763e965dbf3a86f60ebe58))
+
 ## [2.1.0-next.2](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.1.0-next.1...v2.1.0-next.2) (2024-06-21)
 
 
