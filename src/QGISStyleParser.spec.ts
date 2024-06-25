@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import QGISStyleParser from './QGISStyleParser';
-import { Style } from 'geostyler-style';
 import line_simple from '../data/styles/line_simple';
 import point_simple from '../data/styles/point_simple';
 import point_multiple_symbols from '../data/styles/point_multiple_symbols';
@@ -13,7 +12,6 @@ import polygon_simple from '../data/styles/polygon_simple';
 import polygon_simple_nostyle from '../data/styles/polygon_simple_nostyle';
 import no_symbolizer from '../data/styles/no_symbolizer';
 import text_text_buffer from '../data/styles/text_text_buffer';
-import { defaults } from 'xml2js';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
