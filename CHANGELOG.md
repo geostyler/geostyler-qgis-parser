@@ -1,3 +1,14 @@
+## [3.0.0](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.1.0...v3.0.0) (2024-06-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* Switches to esm build and updates base packages.
+
+### Bug Fixes
+
+* fix dependency versions ([ecf3004](https://github.com/geostyler/geostyler-qgis-parser/commit/ecf300440cb90f8ec2e703d4ca4ad9a713807073))
+
 ## [2.1.0](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.0.1...v2.1.0) (2024-06-25)
 
 
