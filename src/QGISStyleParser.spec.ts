@@ -24,90 +24,98 @@ describe('QMLStyleParser implements StyleParser', () => {
     styleParser = new QGISStyleParser();
   });
 
-  describe('#readStyle', () => {
-    it('is defined', () => {
-      expect(styleParser.readStyle).toBeDefined();
-    });
-    describe('PointSymbolizer', () => {
-      it('can read a simple QML PointSymbol', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_simple.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_simple);
+  const QML_FOLDERS = [
+    ['>=3.28.0',  'qmls'],
+    ['<3.28.0', 'qmls_old']
+  ];
+
+  QML_FOLDERS.forEach(qmlVersionFolder => {
+    const [qmlVersion, qmlFolder] = qmlVersionFolder;
+    describe(`#readStyle ${qmlVersion}`, () => {
+      it('is defined', () => {
+        expect(styleParser.readStyle).toBeDefined();
       });
-      it('can read a QML PointSymbolizer with an external graphic', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_external_graphic.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_external_graphic);
+      describe('PointSymbolizer', () => {
+        it('can read a simple QML PointSymbol', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_simple.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_simple);
+        });
+        it('can read a QML PointSymbolizer with an external graphic', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_external_graphic.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_external_graphic);
+        });
+        it('can read a QML PointSymbolizer with multiple symbols', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_multiple_symbols.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_multiple_symbols);
+        });
       });
-      it('can read a QML PointSymbolizer with multiple symbols', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_multiple_symbols.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_multiple_symbols);
+      describe('TextSymbolizer', () => {
+        it('can read some basics of the QML Labeling for Points', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_label.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_label);
+        });
       });
-    });
-    describe('TextSymbolizer', () => {
-      it('can read some basics of the QML Labeling for Points', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_label.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_label);
+      describe('LineSymbolizer', () => {
+        it('can read a simple QML LineSymbol', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/line_simple.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(line_simple);
+        });
       });
-    });
-    describe('LineSymbolizer', () => {
-      it('can read a simple QML LineSymbol', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/line_simple.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(line_simple);
+      describe('FillSymbolizer', () => {
+        it('can read a simple QML FillSymbol', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/polygon_simple.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(polygon_simple);
+        });
       });
-    });
-    describe('FillSymbolizer', () => {
-      it('can read a simple QML FillSymbol', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/polygon_simple.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(polygon_simple);
+      describe('FillSymbolizer with no style', () => {
+        it('can read a simple QML FillSymbol with no style', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/polygon_simple_nostyle.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(polygon_simple_nostyle);
+        });
       });
-    });
-    describe('FillSymbolizer with no style', () => {
-      it('can read a simple QML FillSymbol with no style', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/polygon_simple_nostyle.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(polygon_simple_nostyle);
-      });
-    });
-    describe('Filter Parsing', () => {
-      it('can read a rule based QML PointSymbolizer', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_rules.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_rules);
-      });
-      it('can read a category based QML PointSymbolizer', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_categories.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_categories);
-      });
-      it('can read a range based QML PointSymbolizer', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_ranges.qml', 'utf8');
-        const { output: geoStylerStyle } = await styleParser.readStyle(qml);
-        expect(geoStylerStyle).toBeDefined();
-        expect(geoStylerStyle).toEqual(point_ranges);
+      describe('Filter Parsing', () => {
+        it('can read a rule based QML PointSymbolizer', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_rules.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_rules);
+        });
+        it('can read a category based QML PointSymbolizer', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_categories.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_categories);
+        });
+        it('can read a range based QML PointSymbolizer', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_ranges.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_ranges);
+        });
       });
     });
   });

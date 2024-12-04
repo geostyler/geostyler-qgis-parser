@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.28.0-Firenze">
+<qgis>
   <renderer-v2 type="RuleRenderer">
     <rules key="renderer_rules">
       <rule key="renderer_rule_0" symbol="0" label="Bildpositi = 1" scalemindenom="100" scalemaxdenom="2000" filter="Bildpositi = 1"/>

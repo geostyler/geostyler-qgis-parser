@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.28.0-Firenze">
+<qgis>
   <renderer-v2 type="RuleRenderer">
     <rules key="renderer_rules">
       <rule key="renderer_rule_0" symbol="0" label="QGIS Simple Symbol"/>
@@ -14,8 +14,8 @@
           <prop k="outline_width" v="4"/>
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
           <prop k="outline_width_unit" v="Pixel"/>
+          <prop k="customdash" v="10;2"/>
           <prop k="outline_color" v="255,7,11,128"/>
-          <prop k="style" v="no"/>
         </layer>
       </symbol>
     </symbols>

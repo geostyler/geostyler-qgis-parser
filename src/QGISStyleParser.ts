@@ -24,6 +24,8 @@ import {
   Builder
 } from 'xml2js';
 
+const OUTPUT_VERSION = '3.28.0-Firenze';
+
 const get = (obj: any, path: any, defaultValue = undefined) => {
   const travel = (regexp: RegExp) =>
     String.prototype.split
@@ -962,7 +964,9 @@ export class QGISStyleParser implements StyleParser {
     if (rules.length > 0 || symbols.length > 0) {
       return {
         qgis: {
-          $: {},
+          $: {
+            version: OUTPUT_VERSION
+          },
           'renderer-v2': [{
             $: {
               type
@@ -982,7 +986,9 @@ export class QGISStyleParser implements StyleParser {
     } else {
       return {
         qgis: {
-          $: {},
+          $: {
+            version: OUTPUT_VERSION
+          },
           'renderer-v2': [{
             $: {
               type: 'nullSymbol'

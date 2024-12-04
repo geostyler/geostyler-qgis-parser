@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.28.0-Firenze">
+<qgis>
   <renderer-v2 forceraster="0" graduatedMethod="GraduatedColor" type="graduatedSymbol" attr="PlotNr" symbollevels="0" enableorderby="0">
     <ranges>
       <range symbol="0" upper="20.000000000000000" label=" 1,0000 - 20,0000 " lower="1.000000000000000" render="true"/>
