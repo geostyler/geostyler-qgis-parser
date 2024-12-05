@@ -7,15 +7,17 @@
     <symbols>
       <symbol type="fill" name="0">
         <layer class="SimpleFill">
-          <prop k="color" v="75,255,126,128"/>
-          <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="Pixel"/>
-          <prop k="outline_style" v="dash"/>
-          <prop k="outline_width" v="4"/>
-          <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="Pixel"/>
-          <prop k="outline_color" v="255,7,11,128"/>
-          <prop k="style" v="no"/>
+          <Option type="Map">
+            <Option name="color" value="75,255,126,128" type="QString"/>
+            <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
+            <Option name="outline_style" value="dash" type="QString"/>
+            <Option name="outline_width" value="4" type="QString"/>
+            <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
+            <Option name="outline_color" value="255,7,11,128" type="QString"/>
+            <Option name="style" value="no" type="QString"/>
+          </Option>
         </layer>
       </symbol>
     </symbols>

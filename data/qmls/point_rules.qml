@@ -9,47 +9,53 @@
     <symbols>
       <symbol type="marker" name="0">
         <layer class="SimpleMarker">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="75,255,126,255"/>
-          <prop k="name" v="square"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="1"/>
-          <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="Pixel"/>
-          <prop k="size" v="24"/>
-          <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="Pixel"/>
+          <Option type="Map">
+            <Option name="angle" value="0" type="QString"/>
+            <Option name="color" value="75,255,126,255" type="QString"/>
+            <Option name="name" value="square" type="QString"/>
+            <Option name="outline_color" value="0,0,0,255" type="QString"/>
+            <Option name="outline_style" value="solid" type="QString"/>
+            <Option name="outline_width" value="1" type="QString"/>
+            <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
+            <Option name="size" value="24" type="QString"/>
+            <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
+          </Option>
         </layer>
       </symbol>
       <symbol type="marker" name="1">
         <layer class="SimpleMarker">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="145,82,45,255"/>
-          <prop k="name" v="circle"/>
-          <prop k="outline_color" v="35,35,35,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="1"/>
-          <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="Pixel"/>
-          <prop k="size" v="12"/>
-          <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="Pixel"/>
+          <Option type="Map">
+            <Option name="angle" value="0" type="QString"/>
+            <Option name="color" value="145,82,45,255" type="QString"/>
+            <Option name="name" value="circle" type="QString"/>
+            <Option name="outline_color" value="35,35,35,255" type="QString"/>
+            <Option name="outline_style" value="solid" type="QString"/>
+            <Option name="outline_width" value="1" type="QString"/>
+            <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
+            <Option name="size" value="12" type="QString"/>
+            <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
+          </Option>
         </layer>
       </symbol>
       <symbol type="marker" name="2">
         <layer class="SimpleMarker">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="190,178,151,255"/>
-          <prop k="name" v="circle"/>
-          <prop k="outline_color" v="35,35,35,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="1"/>
-          <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="Pixel"/>
-          <prop k="size" v="12"/>
-          <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="Pixel"/>
+          <Option type="Map">
+            <Option name="angle" value="0" type="QString"/>
+            <Option name="color" value="190,178,151,255" type="QString"/>
+            <Option name="name" value="circle" type="QString"/>
+            <Option name="outline_color" value="35,35,35,255" type="QString"/>
+            <Option name="outline_style" value="solid" type="QString"/>
+            <Option name="outline_width" value="1" type="QString"/>
+            <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
+            <Option name="size" value="12" type="QString"/>
+            <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
+          </Option>
         </layer>
       </symbol>
     </symbols>

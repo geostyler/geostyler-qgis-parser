@@ -51,6 +51,21 @@ type QmlProp = {
   };
 };
 
+type QmlMapOption = {
+  $: {
+    type: string;
+  };
+  Option: QmlOption[];
+};
+
+type QmlOption = {
+  $: {
+    name: string;
+    value: string;
+    type: string;
+  };
+};
+
 type QmlRule = {
   $: {
     filter?: string;
@@ -175,11 +190,22 @@ export class QGISStyleParser implements StyleParser {
    */
   qmlSymbolizerLayerPropsToObject(qmlSymbolizer: any) {
     const qmlMarkerProps: any = {};
-    qmlSymbolizer.prop.forEach((prop: QmlProp) => {
-      const key = prop.$.k;
-      const value = prop.$.v;
-      qmlMarkerProps[key] = value;
-    });
+    // Read props from QML written by QGIS<3.28.0
+    if (qmlSymbolizer.prop) {
+      qmlSymbolizer.prop.forEach((prop: QmlProp) => {
+        const key = prop.$.k;
+        const value = prop.$.v;
+        qmlMarkerProps[key] = value;
+      });
+    }
+    // Read props from QML written by QGIS>=3.28.0
+    if (qmlSymbolizer.Option && qmlSymbolizer.Option[0].Option) {
+      qmlSymbolizer.Option[0].Option.forEach((option: QmlOption) => {
+        const key = option.$.name;
+        const value = option.$.value;
+        qmlMarkerProps[key] = value;
+      });
+    }
     return qmlMarkerProps;
   }
 
@@ -811,7 +837,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleLine'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -843,7 +869,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleFill'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -893,7 +919,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SvgMarker'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -931,7 +957,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleMarker'
       },
-      prop: this.propsObjectToQmlSymbolProps(qmlProps)
+      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -939,16 +965,23 @@ export class QGISStyleParser implements StyleParser {
    *
    * @param properties
    */
-  propsObjectToQmlSymbolProps(properties: any): QmlProp[] {
-    return Object.keys(properties).map(k => {
+  propsObjectToQmlSymbolOptions(properties: any): QmlMapOption {
+    const options = Object.keys(properties).map(k => {
       const v = properties[k];
       return {
         $: {
-          k,
-          v
+          name: k,
+          value: v,
+          type: 'QString'
         }
       };
-    }).filter(s => s.$.v !== undefined);
+    }).filter(o => o.$.value !== undefined);
+    return {
+      $: {
+        type: 'Map'
+      },
+      Option: options
+    };
   }
 
   /**
