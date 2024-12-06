@@ -17,6 +17,7 @@
             <Option name="line_width" value="3" type="QString"/>
             <Option name="line_width_unit" value="Pixel" type="QString"/>
             <Option name="customdash" value="12;12" type="QString"/>
+            <Option name="use_custom_dash" value="1" type="QString"/>
           </Option>
         </layer>
       </symbol>

@@ -98,9 +98,15 @@ type QmlRange = {
   };
 };
 
-export const outlineStyleDashArrays = {
-  dot: [2, 2],
-  dash: [10, 2]
+const dot = [2, 2];
+const dash = [10, 2];
+
+const lineStyleDashArrays: { [key: string]: number[] | undefined } = {
+  solid: undefined,
+  dot: dot,
+  dash: dash,
+  'dash dot': [...dash, ...dot],
+  'dash dot dot': [...dash, ...dot, ...dot]
 };
 
 const AnchorMap = {
@@ -609,8 +615,16 @@ export class QGISStyleParser implements StyleParser {
       if (qmlMarkerProps.joinstyle) {
         lineSymbolizer.join = qmlMarkerProps.joinstyle;
       }
-      if (qmlMarkerProps.customdash) {
-        lineSymbolizer.dasharray = qmlMarkerProps.customdash.split(';').map(parseFloat);
+      if (!qmlMarkerProps.use_custom_dash || qmlMarkerProps.use_custom_dash === '0') {
+        const lineStyle = qmlMarkerProps?.line_style || 'solid';
+        const lineDashArray = lineStyleDashArrays[lineStyle as string];
+        if (lineDashArray) {
+          lineSymbolizer.dasharray = lineDashArray;
+        }
+      } else {
+        if (qmlMarkerProps.customdash) {
+          lineSymbolizer.dasharray = qmlMarkerProps.customdash.split(';').map(parseFloat);
+        }
       }
       if (qmlMarkerProps.offset) {
         lineSymbolizer.perpendicularOffset = parseFloat(qmlMarkerProps.offset);
@@ -640,7 +654,7 @@ export class QGISStyleParser implements StyleParser {
 
       const qmlMarkerProps: any = qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-      let outlineStyle = qmlMarkerProps?.outline_style || 'solid';
+      const outlineStyle = qmlMarkerProps?.outline_style || 'solid';
       if (qmlMarkerProps.outline_color && 'no' !== outlineStyle) {
         fillSymbolizer.outlineColor = this.qmlColorToHex(qmlMarkerProps.outline_color);
       }
@@ -651,28 +665,9 @@ export class QGISStyleParser implements StyleParser {
         fillSymbolizer.color = this.qmlColorToHex(qmlMarkerProps.color);
       }
 
-      switch (outlineStyle) {
-        case 'dot':
-          fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dot;
-          break;
-        case 'dash':
-          fillSymbolizer.outlineDasharray = outlineStyleDashArrays.dash;
-          break;
-        case 'dash dot':
-          fillSymbolizer.outlineDasharray = [
-            ...outlineStyleDashArrays.dash,
-            ...outlineStyleDashArrays.dot
-          ];
-          break;
-        case 'dash dot dot':
-          fillSymbolizer.outlineDasharray = [
-            ...outlineStyleDashArrays.dash,
-            ...outlineStyleDashArrays.dot,
-            ...outlineStyleDashArrays.dot
-          ];
-          break;
-        default:
-          break;
+      const outlineDashArray = lineStyleDashArrays[outlineStyle];
+      if (outlineDashArray) {
+        fillSymbolizer.outlineDasharray = outlineDashArray;
       }
 
       if (qmlMarkerProps.outline_width && 'no' !== outlineStyle) {
@@ -854,6 +849,7 @@ export class QGISStyleParser implements StyleParser {
     };
     if (symbolizer.dasharray) {
       qmlProps.customdash = symbolizer.dasharray.join(';');
+      qmlProps.use_custom_dash = '1';
     }
 
     return {
