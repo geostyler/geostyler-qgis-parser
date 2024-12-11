@@ -24,8 +24,6 @@ import {
   Builder
 } from 'xml2js';
 
-const OUTPUT_VERSION = '3.28.0-Firenze';
-
 const get = (obj: any, path: any, defaultValue = undefined) => {
   const travel = (regexp: RegExp) =>
     String.prototype.split
@@ -34,6 +32,10 @@ const get = (obj: any, path: any, defaultValue = undefined) => {
       .reduce((res: any, key: any) => (res !== null && res !== undefined ? res[key] : res), obj);
   const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
   return result === undefined || result === obj ? defaultValue : result;
+};
+
+export type ConstructorParams = {
+  qgisVersion?: string;
 };
 
 type SymbolizerMap = {
@@ -129,6 +131,27 @@ export class QGISStyleParser implements StyleParser {
   public static title = 'QGIS Style Parser';
 
   title = 'QGIS Style Parser';
+
+  qgisVersion: string;
+
+  // QGIS 3.28 and later use <Option> instead of <prop> to serialize individual properties.
+  writePropsAsOptions: boolean;
+
+  constructor(opts: ConstructorParams = {}) {
+    this.qgisVersion = opts.qgisVersion ?? '3.28.0-Firenze';
+    this.writePropsAsOptions = this.compareVersions('3.28.0-Firenze', this.qgisVersion) >= 0;
+  }
+
+  compareVersions(version1: string, version2: string): number {
+    try {
+      const parseVersion = (version: string) => version.split('-')[0].split('.').map(Number);
+      const [major1, minor1, patch1] = parseVersion(version1);
+      const [major2, minor2, patch2] = parseVersion(version2);
+      return Math.sign(major2 - major1) || Math.sign(minor2 - minor1) || Math.sign(patch2 - patch1);
+    } catch (error) {
+      return 0;
+    }
+  }
 
   /**
    * The readStyle implementation of the GeoStyler-Style StyleParser interface.
@@ -837,7 +860,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleLine'
       },
-      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
+      ...this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -869,7 +892,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleFill'
       },
-      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
+      ...this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -919,7 +942,7 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SvgMarker'
       },
-      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
+      ...this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
@@ -957,15 +980,21 @@ export class QGISStyleParser implements StyleParser {
       $: {
         class: 'SimpleMarker'
       },
-      Option: this.propsObjectToQmlSymbolOptions(qmlProps)
+      ...this.propsObjectToQmlSymbolOptions(qmlProps)
     };
   }
 
   /**
-   *
-   * @param properties
+   * @param {object} properties Object containing key-value pairs to serialize as QML.
+   * @return an XML object representing either <Option type="map"><repeated Option /></Option> or <repeated prop... />
    */
-  propsObjectToQmlSymbolOptions(properties: any): QmlMapOption {
+  propsObjectToQmlSymbolOptions(properties: any): {Option: QmlMapOption} | {prop: QmlProp[]} {
+    return this.writePropsAsOptions
+      ? this.propsObjectToQmlSymbol_NewerOptions(properties)
+      : this.propsObjectToQmlSymbol_OlderProps(properties);
+  }
+
+  propsObjectToQmlSymbol_NewerOptions(properties: any): {Option: QmlMapOption} {
     const options = Object.keys(properties).map(k => {
       const v = properties[k];
       return {
@@ -977,11 +1006,26 @@ export class QGISStyleParser implements StyleParser {
       };
     }).filter(o => o.$.value !== undefined);
     return {
-      $: {
-        type: 'Map'
-      },
-      Option: options
+      Option: {
+        $: {
+          type: 'Map'
+        },
+        Option: options
+      }
     };
+  }
+
+  propsObjectToQmlSymbol_OlderProps(properties: any): {prop: QmlProp[]} {
+    const props = Object.keys(properties).map(k => {
+      const v = properties[k];
+      return {
+        $: {
+          k: k,
+          v: v,
+        }
+      };
+    }).filter(p => p.$.v !== undefined);
+    return {prop: props};
   }
 
   /**
@@ -998,7 +1042,7 @@ export class QGISStyleParser implements StyleParser {
       return {
         qgis: {
           $: {
-            version: OUTPUT_VERSION
+            version: this.qgisVersion
           },
           'renderer-v2': [{
             $: {
@@ -1020,7 +1064,7 @@ export class QGISStyleParser implements StyleParser {
       return {
         qgis: {
           $: {
-            version: OUTPUT_VERSION
+            version: this.qgisVersion
           },
           'renderer-v2': [{
             $: {

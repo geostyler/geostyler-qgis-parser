@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis>
+<qgis version="3.22.16-Białowieża">
   <renderer-v2 type="RuleRenderer">
     <rules key="renderer_rules">
       <rule key="renderer_rule_0" symbol="0" label="QGIS Simple Symbol"/>
