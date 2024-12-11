@@ -1,4 +1,4 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis>
+<qgis version="3.22.16-Białowieża">
   <renderer-v2 type="nullSymbol"/>
 </qgis>

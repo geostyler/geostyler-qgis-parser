@@ -21,7 +21,9 @@ describe('QMLStyleParser implements StyleParser', () => {
   let styleParser: QGISStyleParser;
 
   beforeEach(() => {
-    styleParser = new QGISStyleParser();
+    styleParser = (expect.getState().currentTestName.includes('>=3.28.0'))
+      ? new QGISStyleParser()
+      : new QGISStyleParser({qgisVersion: '3.22.16-Białowieża'});
   });
 
   const QML_FOLDERS = [
@@ -120,83 +122,85 @@ describe('QMLStyleParser implements StyleParser', () => {
     });
   });
 
-  describe('#writeStyle', () => {
-    it('is defined', () => {
-      expect(styleParser.writeStyle).toBeDefined();
-    });
-    describe('PointSymbolizer', () => {
-      it('can write a simple QML PointSymbol', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_simple.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(point_simple);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
+  QML_FOLDERS.forEach(qmlVersionFolder => {
+    const [qmlVersion, qmlFolder] = qmlVersionFolder;
+    describe(`#writeStyle ${qmlVersion}`, () => {
+      it('is defined', () => {
+        expect(styleParser.writeStyle).toBeDefined();
       });
-      it('can write a QML PointSymbolizer with an external graphic', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_external_graphic.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(point_external_graphic);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
+      describe('PointSymbolizer', () => {
+        it('can write a simple QML PointSymbol', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_simple.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(point_simple);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
+        it('can write a QML PointSymbolizer with an external graphic', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_external_graphic.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(point_external_graphic);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
+        it('can write a QML PointSymbolizer with multiple symbols', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_multiple_symbols.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(point_multiple_symbols);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
       });
-      it('can write a QML PointSymbolizer with multiple symbols', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_multiple_symbols.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(point_multiple_symbols);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
+      describe('TextSymbolizer', () => {
+        it('can write some basics of the QML Labeling for Points', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_label.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(point_label);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
+        it('can write QML with text-buffer', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/text_text_buffer.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(text_text_buffer);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
       });
-    });
-    describe('TextSymbolizer', () => {
-      it('can write some basics of the QML Labeling for Points', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_label.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(point_label);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
+      describe('LineSymbolizer', () => {
+        it('can write a simple QML LineSymbol', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/line_simple.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(line_simple);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
       });
-      it('can write QML with text-buffer', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/text_text_buffer.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(text_text_buffer);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
+      describe('FillSymbolizer', () => {
+        it('can write a simple QML FillSymbol', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/polygon_simple.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(polygon_simple);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
       });
-    });
-    describe('LineSymbolizer', () => {
-      it('can write a simple QML LineSymbol', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/line_simple.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(line_simple);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
-      });
-    });
-    describe('FillSymbolizer', () => {
-      it('can write a simple QML FillSymbol', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/polygon_simple.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(polygon_simple);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
-      });
-    });
-    describe('Filter Parsing', () => {
-      it('can write a rule based QML PointSymbolizer', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/point_rules.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(point_rules);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
-      });
-      it('can write QML with no symbolizers', async () => {
-        expect.assertions(2);
-        const qml = fs.readFileSync('./data/qmls/no_symbolizer.qml', 'utf8');
-        const { output: qgisStyle } = await styleParser.writeStyle(no_symbolizer);
-        expect(qgisStyle).toBeDefined();
-        expect(qgisStyle).toEqual(qml.trim());
+      describe('Filter Parsing', () => {
+        it('can write a rule based QML PointSymbolizer', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_rules.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(point_rules);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
+        it('can write QML with no symbolizers', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/no_symbolizer.qml`, 'utf8');
+          const { output: qgisStyle } = await styleParser.writeStyle(no_symbolizer);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle).toEqual(qml.trim());
+        });
       });
     });
   });
-
 });
