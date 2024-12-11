@@ -1,8 +1,0 @@
-{
-  "src/QGISStyleParser.ts": {
-    "file": "qgisStyleParser.iife.js",
-    "name": "QGISStyleParser",
-    "src": "src/QGISStyleParser.ts",
-    "isEntry": true
-  }
-}
