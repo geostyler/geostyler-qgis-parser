@@ -16,6 +16,7 @@
           <prop k="line_width" v="3"/>
           <prop k="line_width_unit" v="Pixel"/>
           <prop k="customdash" v="12;12"/>
+          <prop k="use_custom_dash" v="1"/>
         </layer>
       </symbol>
     </symbols>
