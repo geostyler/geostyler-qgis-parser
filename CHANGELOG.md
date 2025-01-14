@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/geostyler/geostyler-qgis-parser/compare/v4.0.0...v4.0.1) (2025-01-14)
+
+### Bug Fixes
+
+* **deps:** update dependency geostyler-cql-parser to v4.0.1 ([619830a](https://github.com/geostyler/geostyler-qgis-parser/commit/619830aa4f7da167b77305255e4ec8c5cc55e90c))
+* **deps:** update dependency geostyler-style to v9.2.0 ([bbd8411](https://github.com/geostyler/geostyler-qgis-parser/commit/bbd841174ac2f4714ff8b2202c4746a6a3b4f178))
+
 ## [3.0.0](https://github.com/geostyler/geostyler-qgis-parser/compare/v2.1.0...v3.0.0) (2024-06-26)
 
 
