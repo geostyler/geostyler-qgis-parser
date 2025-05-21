@@ -652,6 +652,11 @@ export class QGISStyleParser implements StyleParser {
         kind: 'Fill',
       } as FillSymbolizer;
 
+      if (symbolizerLayer.$.class === 'PointPatternFill') {
+        fillSymbolizer.graphicFill = symbolizerLayer.symbol.map(
+          (x: any) => this.getPointSymbolizersFromQmlSymbolizer(x));
+      }
+
       const qmlMarkerProps: any = qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
       let outlineStyle = qmlMarkerProps?.outline_style || 'solid';
@@ -682,7 +687,7 @@ export class QGISStyleParser implements StyleParser {
 
       // if you supply a fill with an outline color and no fill color,
       // it will make the background black.
-      if (fillSymbolizer.outlineColor && !fillSymbolizer.color){
+      if (fillSymbolizer.outlineColor && !fillSymbolizer.color && fillStyle !== 'no'){
         fillSymbolizer.color = 'transparent';
       }
       return fillSymbolizer;
