@@ -654,9 +654,15 @@ export class QGISStyleParser implements StyleParser {
 
       const qmlMarkerProps: any = qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-      const outlineStyle = qmlMarkerProps?.outline_style || 'solid';
+      let outlineStyle = qmlMarkerProps?.outline_style || 'solid';
       if (qmlMarkerProps.outline_color && 'no' !== outlineStyle) {
         fillSymbolizer.outlineColor = this.qmlColorToHex(qmlMarkerProps.outline_color);
+      }
+      // in some cases, QGIS will use line_* instead of outline_*
+      const lineStyle = qmlMarkerProps?.line_style;
+      if (!fillSymbolizer.outlineColor && lineStyle && lineStyle !== 'no') {
+        outlineStyle = lineStyle;
+        fillSymbolizer.outlineColor = this.qmlColorToHex(qmlMarkerProps.line_color);
       }
 
       let fillStyle = qmlMarkerProps?.style || 'solid';
@@ -674,6 +680,11 @@ export class QGISStyleParser implements StyleParser {
         fillSymbolizer.outlineWidth = parseFloat(qmlMarkerProps.outline_width);
       }
 
+      // if you supply a fill with an outline color and no fill color,
+      // it will make the background black.
+      if (fillSymbolizer.outlineColor && !fillSymbolizer.color){
+        fillSymbolizer.color = 'transparent';
+      }
       return fillSymbolizer;
     });
   }
