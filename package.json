@@ -39,6 +39,7 @@
     "build-browser": "vite build",
     "build-dist": "tsc",
     "build": "npm run build-browser && npm run build-dist",
+    "prepare": "npm run build",
     "lint:test:build": "npm run lint && npm run test && npm run build",
     "lint:test": "npm run lint && npm run test",
     "lint": "eslint -c .eslintrc.cjs --ext .ts . && tsc --noEmit",
