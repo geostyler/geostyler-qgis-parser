@@ -1,17 +1,19 @@
 import * as fs from 'fs';
-import QGISStyleParser from './QGISStyleParser';
 import line_simple from '../data/styles/line_simple';
-import point_simple from '../data/styles/point_simple';
-import point_multiple_symbols from '../data/styles/point_multiple_symbols';
-import point_rules from '../data/styles/point_rules';
+import no_symbolizer from '../data/styles/no_symbolizer';
 import point_categories from '../data/styles/point_categories';
-import point_label from '../data/styles/point_label';
-import point_ranges from '../data/styles/point_ranges';
 import point_external_graphic from '../data/styles/point_external_graphic';
+import point_label from '../data/styles/point_label';
+import point_multiple_symbols from '../data/styles/point_multiple_symbols';
+import point_ranges from '../data/styles/point_ranges';
+import point_rules from '../data/styles/point_rules';
+import point_simple from '../data/styles/point_simple';
+import polygon_outline_only from '../data/styles/polygon_outline_only';
+import polygon_point_pattern_fill from '../data/styles/polygon_point_pattern_fill';
 import polygon_simple from '../data/styles/polygon_simple';
 import polygon_simple_nostyle from '../data/styles/polygon_simple_nostyle';
-import no_symbolizer from '../data/styles/no_symbolizer';
 import text_text_buffer from '../data/styles/text_text_buffer';
+import QGISStyleParser from './QGISStyleParser';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -85,6 +87,20 @@ describe('QMLStyleParser implements StyleParser', () => {
           const { output: geoStylerStyle } = await styleParser.readStyle(qml);
           expect(geoStylerStyle).toBeDefined();
           expect(geoStylerStyle).toEqual(polygon_simple);
+        });
+        it('can read a QML FillSymbolizer with only an outline', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/polygon_outline_only.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(polygon_outline_only);
+        });
+        it('can read a QML FillSymbolizer with a PointPatternFill', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/polygon_point_pattern_fill.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(polygon_point_pattern_fill);
         });
       });
       describe('FillSymbolizer with no style', () => {

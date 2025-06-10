@@ -647,16 +647,23 @@ export class QGISStyleParser implements StyleParser {
     const {
       qmlSymbolizerLayerPropsToObject
     } = this;
-    return qmlSymbolizer.layer.map((symbolizerLayer: any) => {
+    return qmlSymbolizer.layer.flatMap((symbolizerLayer: any) => {
       let fillSymbolizer: FillSymbolizer = {
         kind: 'Fill',
       } as FillSymbolizer;
 
+
       const qmlMarkerProps: any = qmlSymbolizerLayerPropsToObject(symbolizerLayer);
 
-      const outlineStyle = qmlMarkerProps?.outline_style || 'solid';
+      let outlineStyle = qmlMarkerProps?.outline_style || 'solid';
       if (qmlMarkerProps.outline_color && 'no' !== outlineStyle) {
         fillSymbolizer.outlineColor = this.qmlColorToHex(qmlMarkerProps.outline_color);
+      }
+      // in some cases, QGIS will use line_* instead of outline_*
+      const lineStyle = qmlMarkerProps?.line_style;
+      if (!fillSymbolizer.outlineColor && lineStyle && lineStyle !== 'no') {
+        outlineStyle = lineStyle;
+        fillSymbolizer.outlineColor = this.qmlColorToHex(qmlMarkerProps.line_color);
       }
 
       let fillStyle = qmlMarkerProps?.style || 'solid';
@@ -674,7 +681,23 @@ export class QGISStyleParser implements StyleParser {
         fillSymbolizer.outlineWidth = parseFloat(qmlMarkerProps.outline_width);
       }
 
-      return fillSymbolizer;
+      // if you supply a fill with an outline color and no fill color,
+      // it will make the background black.
+      if (fillSymbolizer.outlineColor && !fillSymbolizer.color && fillStyle !== 'no'){
+        fillSymbolizer.color = 'transparent';
+      }
+
+      if (symbolizerLayer.$.class === 'PointPatternFill') {
+        const graphicFillList: PointSymbolizer[] = symbolizerLayer.symbol.flatMap(
+          (x: any) => this.getPointSymbolizersFromQmlSymbolizer(x));
+        if (graphicFillList.length > 1) {
+          return graphicFillList.map(graphicFill => ({...fillSymbolizer, graphicFill}));
+        }
+        if (graphicFillList.length === 1) {
+          fillSymbolizer.graphicFill = graphicFillList[0];
+        }
+      }
+      return [fillSymbolizer];
     });
   }
 
