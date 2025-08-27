@@ -115,6 +115,72 @@ describe('QMLStyleParser implements StyleParser', () => {
           expect(geoStylerStyle).toEqual(polygon_simple_nostyle);
         });
       });
+      describe('Getting Rules (getRulesFromQmlObject)', () => {
+        it('can read rules from QML containing simple symbolization and simple labeling', async () => {
+          expect.assertions(6);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/rules_simple_symbol_simple_label.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(2);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Mark');
+          expect(geoStylerStyle?.rules[0].symbolizers[1].kind).toBe('Text');
+          expect(geoStylerStyle?.rules[0].name).toBe('QGIS Simple Symbol');
+        });
+        it('can read rules from QML containing rule-based symbolization and simple labeling', async () => {
+          expect.assertions(11);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/rules_ruled_symbol_simple_label.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(3);
+          expect(geoStylerStyle?.rules[0].name).toBe('Symbol-Rule 1');
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Mark');
+          expect(geoStylerStyle?.rules[1].name).toBe('Symbol-Rule 2');
+          expect(geoStylerStyle?.rules[1].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[1].symbolizers[0].kind).toBe('Mark');
+          expect(geoStylerStyle?.rules[2].name).toBe('QGIS Simple Symbol');
+          expect(geoStylerStyle?.rules[2].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[2].symbolizers[0].kind).toBe('Text');
+        });
+        it('can read rules from QML containing simple symbolization and rule-based labeling', async () => {
+          expect.assertions(13);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/rules_simple_symbol_ruled_label.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(3);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(3);
+          expect(geoStylerStyle?.rules[0].name).toBe('QGIS Simple Symbol');
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Mark');
+          expect(geoStylerStyle?.rules[1].name).toBe('Text-Rule 1');
+          expect(geoStylerStyle?.rules[1].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[1].symbolizers[0].kind).toBe('Text');
+          expect(geoStylerStyle?.rules[2].name).toBe('Text-Rule 2');
+          expect(geoStylerStyle?.rules[2].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[2].symbolizers[0].kind).toBe('Text');
+        });
+        it('can read rules from QML containing rule-based symbolization and rule-based labeling', async () => {
+          expect.assertions(14);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/rules_ruled_symbol_ruled_label.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(4);
+          expect(geoStylerStyle?.rules[0].name).toBe('Symbol-Rule 1');
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Mark');
+          expect(geoStylerStyle?.rules[1].name).toBe('Symbol-Rule 2');
+          expect(geoStylerStyle?.rules[1].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[1].symbolizers[0].kind).toBe('Mark');
+          expect(geoStylerStyle?.rules[2].name).toBe('Text-Rule 1');
+          expect(geoStylerStyle?.rules[2].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[2].symbolizers[0].kind).toBe('Text');
+          expect(geoStylerStyle?.rules[3].name).toBe('Text-Rule 2');
+          expect(geoStylerStyle?.rules[3].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[3].symbolizers[0].kind).toBe('Text');
+        });
+      });
       describe('Filter Parsing', () => {
         it('can read a rule based QML PointSymbolizer', async () => {
           expect.assertions(2);
