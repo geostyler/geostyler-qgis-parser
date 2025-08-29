@@ -14,6 +14,7 @@ import polygon_simple from '../data/styles/polygon_simple';
 import polygon_simple_nostyle from '../data/styles/polygon_simple_nostyle';
 import text_text_buffer from '../data/styles/text_text_buffer';
 import QGISStyleParser from './QGISStyleParser';
+import { TextSymbolizer } from 'geostyler-style';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -69,6 +70,26 @@ describe('QMLStyleParser implements StyleParser', () => {
           const { output: geoStylerStyle } = await styleParser.readStyle(qml);
           expect(geoStylerStyle).toBeDefined();
           expect(geoStylerStyle).toEqual(point_label);
+        });
+        it('can read anchor of the QML Labeling for Points', async () => {
+          expect.assertions(5);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_label_anchor.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Text');
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as TextSymbolizer).anchor).toBe('bottom');
+        });
+        it('preserves line-arranged-placement if reading QML Labeling for Lines', async () => {
+          expect.assertions(5);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/line_label_follow_line.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Text');
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as TextSymbolizer).placement).toBe('line');
         });
       });
       describe('LineSymbolizer', () => {
