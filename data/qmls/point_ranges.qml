@@ -19,16 +19,16 @@
             <Option name="name" value="circle" type="QString"/>
             <Option name="offset" value="0,0" type="QString"/>
             <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
             <Option name="outline_color" value="35,35,35,255" type="QString"/>
             <Option name="outline_style" value="solid" type="QString"/>
             <Option name="outline_width" value="0" type="QString"/>
             <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
             <Option name="scale_method" value="diameter" type="QString"/>
             <Option name="size" value="4" type="QString"/>
             <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
             <Option name="vertical_anchor_point" value="1" type="QString"/>
           </Option>
           <data_defined_properties>
@@ -50,16 +50,16 @@
             <Option name="name" value="circle" type="QString"/>
             <Option name="offset" value="0,0" type="QString"/>
             <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
             <Option name="outline_color" value="35,35,35,255" type="QString"/>
             <Option name="outline_style" value="solid" type="QString"/>
             <Option name="outline_width" value="0" type="QString"/>
             <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
             <Option name="scale_method" value="diameter" type="QString"/>
             <Option name="size" value="4" type="QString"/>
             <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
             <Option name="vertical_anchor_point" value="1" type="QString"/>
           </Option>
           <data_defined_properties>
@@ -81,16 +81,16 @@
             <Option name="name" value="circle" type="QString"/>
             <Option name="offset" value="0,0" type="QString"/>
             <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
             <Option name="outline_color" value="35,35,35,255" type="QString"/>
             <Option name="outline_style" value="solid" type="QString"/>
             <Option name="outline_width" value="0" type="QString"/>
             <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
             <Option name="scale_method" value="diameter" type="QString"/>
             <Option name="size" value="4" type="QString"/>
             <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
             <Option name="vertical_anchor_point" value="1" type="QString"/>
           </Option>
           <data_defined_properties>
@@ -112,16 +112,16 @@
             <Option name="name" value="circle" type="QString"/>
             <Option name="offset" value="0,0" type="QString"/>
             <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
             <Option name="outline_color" value="35,35,35,255" type="QString"/>
             <Option name="outline_style" value="solid" type="QString"/>
             <Option name="outline_width" value="0" type="QString"/>
             <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
             <Option name="scale_method" value="diameter" type="QString"/>
             <Option name="size" value="4" type="QString"/>
             <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
             <Option name="vertical_anchor_point" value="1" type="QString"/>
           </Option>
           <data_defined_properties>
@@ -143,16 +143,16 @@
             <Option name="name" value="circle" type="QString"/>
             <Option name="offset" value="0,0" type="QString"/>
             <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
             <Option name="outline_color" value="35,35,35,255" type="QString"/>
             <Option name="outline_style" value="solid" type="QString"/>
             <Option name="outline_width" value="0" type="QString"/>
             <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
             <Option name="scale_method" value="diameter" type="QString"/>
             <Option name="size" value="4" type="QString"/>
             <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
             <Option name="vertical_anchor_point" value="1" type="QString"/>
           </Option>
           <data_defined_properties>
@@ -176,16 +176,16 @@
             <Option name="name" value="circle" type="QString"/>
             <Option name="offset" value="0,0" type="QString"/>
             <Option name="offset_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="offset_unit" value="MM" type="QString"/>
+            <Option name="offset_unit" value="Pixel" type="QString"/>
             <Option name="outline_color" value="35,35,35,255" type="QString"/>
             <Option name="outline_style" value="solid" type="QString"/>
             <Option name="outline_width" value="0" type="QString"/>
             <Option name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="outline_width_unit" value="MM" type="QString"/>
+            <Option name="outline_width_unit" value="Pixel" type="QString"/>
             <Option name="scale_method" value="diameter" type="QString"/>
             <Option name="size" value="4" type="QString"/>
             <Option name="size_map_unit_scale" value="3x:0,0,0,0,0,0" type="QString"/>
-            <Option name="size_unit" value="MM" type="QString"/>
+            <Option name="size_unit" value="Pixel" type="QString"/>
             <Option name="vertical_anchor_point" value="1" type="QString"/>
           </Option>
           <data_defined_properties>
