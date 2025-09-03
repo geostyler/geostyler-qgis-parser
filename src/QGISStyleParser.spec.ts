@@ -14,6 +14,9 @@ import polygon_simple from '../data/styles/polygon_simple';
 import polygon_simple_nostyle from '../data/styles/polygon_simple_nostyle';
 import text_text_buffer from '../data/styles/text_text_buffer';
 import QGISStyleParser from './QGISStyleParser';
+import { LineSymbolizer } from 'geostyler-style';
+import unitsMetersOnEarth from '../data/styles/units_metersOnEarth';
+import unitsPixel from '../data/styles/units_Pixel';
 
 it('QGISStyleParser is defined', () => {
   expect(QGISStyleParser).toBeDefined();
@@ -135,6 +138,55 @@ describe('QMLStyleParser implements StyleParser', () => {
           expect(geoStylerStyle).toEqual(point_ranges);
         });
       });
+      describe('Handling of DistanceUnits', () => {
+        it('can read a Symbolizer with Unit=RenderMetersInMapUnits', async () => {
+          expect.assertions(6);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/units_metersOnEarth.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Line');
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).width).toBe(1500);
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).widthUnit).toBe('m');
+        });
+        it('can read a Symbolizer with Unit=Point', async () => {
+          expect.assertions(6);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/units_points.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Line');
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).width).toBe(10.7);
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).widthUnit)
+            .toBeUndefined(); // because it's Pixel which is default-unit
+        });
+        it('can read a Symbolizer with Unit=Millimeter', async () => {
+          expect.assertions(6);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/units_mm.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Line');
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).width).toBe(5.7);
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).widthUnit)
+            .toBeUndefined(); // because it's Pixel which is default-unit
+        });
+        it('can read a Symbolizer with Unit=Inch', async () => {
+          expect.assertions(6);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/units_inch.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle?.rules.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers.length).toBe(1);
+          expect(geoStylerStyle?.rules[0].symbolizers[0].kind).toBe('Line');
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).width).toBe(9.6);
+          expect((geoStylerStyle?.rules[0].symbolizers[0] as LineSymbolizer).widthUnit)
+            .toBeUndefined(); // because it's Pixel which is default-unit
+        });
+      });
     });
   });
 
@@ -215,6 +267,23 @@ describe('QMLStyleParser implements StyleParser', () => {
           const { output: qgisStyle } = await styleParser.writeStyle(no_symbolizer);
           expect(qgisStyle).toBeDefined();
           expect(qgisStyle).toEqual(qml.trim());
+        });
+      });
+      describe('Handling of DistanceUnits', () => {
+        it('can write a Symbolizer with DistanceUnit Meter', async () => {
+          expect.assertions(2);
+          const { output: qgisStyle } = await styleParser.writeStyle(unitsMetersOnEarth);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle?.includes(
+            '<Option name="line_width_unit" value="RenderMetersInMapUnits" type="QString"/>') ||
+            qgisStyle?.includes('<prop k="line_width_unit" v="RenderMetersInMapUnits"/>')).toBe(true);
+        });
+        it('can write a Symbolizer with DistanceUnit Pixel', async () => {
+          expect.assertions(2);
+          const { output: qgisStyle } = await styleParser.writeStyle(unitsPixel);
+          expect(qgisStyle).toBeDefined();
+          expect(qgisStyle?.includes('<Option name="line_width_unit" value="Pixel" type="QString"/>') ||
+            qgisStyle?.includes('<prop k="line_width_unit" v="Pixel"/>')).toBe(true);
         });
       });
     });

@@ -17,16 +17,16 @@
           <prop k="name" v="circle"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
+          <prop k="offset_unit" v="Pixel"/>
           <prop k="outline_color" v="35,35,35,255"/>
           <prop k="outline_style" v="solid"/>
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
+          <prop k="outline_width_unit" v="Pixel"/>
           <prop k="scale_method" v="diameter"/>
           <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
+          <prop k="size_unit" v="Pixel"/>
           <prop k="vertical_anchor_point" v="1"/>
           <data_defined_properties>
             <Option type="Map">
@@ -46,16 +46,16 @@
           <prop k="name" v="circle"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
+          <prop k="offset_unit" v="Pixel"/>
           <prop k="outline_color" v="35,35,35,255"/>
           <prop k="outline_style" v="solid"/>
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
+          <prop k="outline_width_unit" v="Pixel"/>
           <prop k="scale_method" v="diameter"/>
           <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
+          <prop k="size_unit" v="Pixel"/>
           <prop k="vertical_anchor_point" v="1"/>
           <data_defined_properties>
             <Option type="Map">
@@ -75,16 +75,16 @@
           <prop k="name" v="circle"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
+          <prop k="offset_unit" v="Pixel"/>
           <prop k="outline_color" v="35,35,35,255"/>
           <prop k="outline_style" v="solid"/>
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
+          <prop k="outline_width_unit" v="Pixel"/>
           <prop k="scale_method" v="diameter"/>
           <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
+          <prop k="size_unit" v="Pixel"/>
           <prop k="vertical_anchor_point" v="1"/>
           <data_defined_properties>
             <Option type="Map">
@@ -104,16 +104,16 @@
           <prop k="name" v="circle"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
+          <prop k="offset_unit" v="Pixel"/>
           <prop k="outline_color" v="35,35,35,255"/>
           <prop k="outline_style" v="solid"/>
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
+          <prop k="outline_width_unit" v="Pixel"/>
           <prop k="scale_method" v="diameter"/>
           <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
+          <prop k="size_unit" v="Pixel"/>
           <prop k="vertical_anchor_point" v="1"/>
           <data_defined_properties>
             <Option type="Map">
@@ -135,16 +135,16 @@
           <prop k="name" v="circle"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
+          <prop k="offset_unit" v="Pixel"/>
           <prop k="outline_color" v="35,35,35,255"/>
           <prop k="outline_style" v="solid"/>
           <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
+          <prop k="outline_width_unit" v="Pixel"/>
           <prop k="scale_method" v="diameter"/>
           <prop k="size" v="4"/>
           <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
+          <prop k="size_unit" v="Pixel"/>
           <prop k="vertical_anchor_point" v="1"/>
           <data_defined_properties>
             <Option type="Map">
