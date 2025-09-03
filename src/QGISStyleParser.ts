@@ -13,7 +13,8 @@ import {
   TextSymbolizer,
   WriteStyleResult,
   ReadStyleResult,
-  isGeoStylerFunction
+  isGeoStylerFunction,
+  DistanceUnit
 } from 'geostyler-style';
 
 import { CqlParser } from 'geostyler-cql-parser';
@@ -23,6 +24,11 @@ import {
   parseString,
   Builder
 } from 'xml2js';
+
+// Constants for mapping QML-units
+const DEF_RESOLUTION = 96.0;
+const PT_PER_INCH = 72.0;
+const MM_PER_INCH = 25.4;
 
 const get = (obj: any, path: any, defaultValue = undefined) => {
   const travel = (regexp: RegExp) =>
@@ -289,6 +295,113 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
+   * Translates the QML unit to a GeoStyler distance unit.
+   *
+   * @param qmlUnit
+   */
+  qmlUnitToDistanceUnit(qmlUnit: string): DistanceUnit {
+    if (qmlUnit === 'RenderMetersInMapUnits') {
+      return 'm';
+    }
+    return 'px';
+  }
+
+  /**
+   * Translates a GeoStyler distance unit to a QML unit.
+   *
+   * @param unit
+   */
+  distanceUnitToQmlUnit(unit: DistanceUnit | undefined): string {
+    if (unit === 'm') {
+      return 'RenderMetersInMapUnits';
+    }
+    return 'Pixel';
+  }
+
+  /**
+   * Get the number of pixels per QML unit
+   *
+   * @param qmlUnit The QML unit.
+   * @param dpi The resolution in dots-per-inch.
+   */
+  getPixelsPerQmlUnit(qmlUnit: string, dpi: number): number | undefined {
+    if (qmlUnit === 'Pixel') {
+      return 1.0;
+    }
+    if (qmlUnit === 'Point') {
+      return dpi / PT_PER_INCH; // 1pt = 96/72 CSS-Pixel
+    }
+    if (qmlUnit === 'MM') {
+      return dpi / MM_PER_INCH; // 1 Inch = 25.4mm
+    }
+    if (qmlUnit === 'Inch') {
+      return dpi; // 96 pixels per inch
+    }
+    return undefined;
+  }
+
+  /**
+   * Converts a value given in a QML unit to a GeoStyler distance unit.
+   *
+   * @param value
+   * @param qmlUnit
+   * @param dstUnit
+   */
+  unitValueToDistanceUnitValue(value: number, qmlUnit: string, dstUnit: DistanceUnit): number {
+    if (qmlUnit === 'RenderMetersInMapUnits' && dstUnit === 'm') {
+      return value;
+    }
+    if (dstUnit !== 'px') {
+      return value; // this would be an invalid/unsupported combination
+    }
+
+    // QGis seems to perform unit-conversion in class QgsLayoutMeasurementConverter. Problem
+    // with unit "Pixel": It's resolution-dependent. We can only assume the standard-resolution
+    // of 96 DPI here, which is also the CSS-standard.
+    const pixelsPerQmlUnit = this.getPixelsPerQmlUnit(qmlUnit, DEF_RESOLUTION);
+    if (pixelsPerQmlUnit ) {
+      return Math.round(value * pixelsPerQmlUnit * 10.0) / 10.0; // round to 0.1px to not break existing tests
+    }
+
+    // what todo now? There's an unknown unit. It might be "MapUnit" which we cannot transform
+    // to any of the allowed Distance-Units. Or it might be "Percentage", then we would need the
+    // reference-value to calculate the size. We should throw an error but I cannot overview the
+    // consequences this might have on existing scenarios. So we deliver the unchanged value...
+    return value;
+  }
+
+  /**
+   * Applies a size-value and a measurement-unit given in a QML unit to a GeoStyler symbolizer.
+   * The size-value is converted if required.
+   *
+   * @param qmlSizeValue the QML size value
+   * @param qmlUnit the QML unit
+   * @param valueSetter lambda to set the size value on the symbolizer
+   * @param unitSetter lambda to set the unit on the symbolizer
+   */
+  setSizeUnit(qmlSizeValue: any, qmlUnit: any, valueSetter: (value: number) => void,
+    unitSetter: (unit: DistanceUnit) => void, forceSetValue: boolean = false) {
+    if (qmlUnit && qmlSizeValue && parseFloat(qmlSizeValue)>0) {
+      const outlineWidthUnit: DistanceUnit = this.qmlUnitToDistanceUnit(qmlUnit);
+      if (unitSetter && outlineWidthUnit) {
+        if (outlineWidthUnit !== 'px') {
+          unitSetter(outlineWidthUnit); // set unit only if not default
+        }
+        qmlSizeValue = this.unitValueToDistanceUnitValue(parseFloat(qmlSizeValue),
+          qmlUnit, outlineWidthUnit);
+      }
+    }
+
+    if (qmlSizeValue && !isGeoStylerFunction(qmlSizeValue)) {
+      const nQmlSizeValue: number = parseFloat(qmlSizeValue);
+      if (nQmlSizeValue>0 || forceSetValue) {
+        valueSetter(nQmlSizeValue);
+      }
+    }
+  }
+
+
+  /**
    * Get the GeoStyler-Style Rule from an QML Object (created with xml2js).
    *
    * @param {object} qmlObject The QML object representation (created with xml2js)
@@ -475,9 +588,10 @@ export class QGISStyleParser implements StyleParser {
       // TODO parse fieldName templates like: "'ID: ' || ID"
       textSymbolizer.label = this.parseLabelTemplates(styleProperties.fieldName);
     }
-    if (styleProperties.fontSize) {
-      textSymbolizer.size = parseFloat(styleProperties.fontSize);
-    }
+    this.setSizeUnit(styleProperties.fontSize, styleProperties.fontSizeUnit,
+      (_value) => {textSymbolizer.size = _value;},
+      (_value) => {(textSymbolizer as any).sizeUnit = _value;} // HACK: until TextSymbolizer lacks Property sizeUnit
+    );
     if (styleProperties.fontFamily) {
       textSymbolizer.font = [styleProperties.fontFamily];
     }
@@ -578,7 +692,10 @@ export class QGISStyleParser implements StyleParser {
       markSymbolizer.rotate = parseFloat(qmlMarkerProps.angle);
     }
     if (qmlMarkerProps.size) {
-      markSymbolizer.radius = parseFloat(qmlMarkerProps.size) / 2;
+      this.setSizeUnit(parseFloat(qmlMarkerProps.size) / 2, qmlMarkerProps.size_unit,
+        (_value) => {markSymbolizer.radius = _value;},
+        (_value) => {markSymbolizer.radiusUnit = _value;}
+      );
     }
     // TODO Fix in style declaration
     // if (qmlMarkerProps.offset) {
@@ -588,9 +705,10 @@ export class QGISStyleParser implements StyleParser {
       markSymbolizer.strokeOpacity = this.qmlColorToOpacity(qmlMarkerProps.outline_color);
       markSymbolizer.strokeColor = this.qmlColorToHex(qmlMarkerProps.outline_color);
     }
-    if (qmlMarkerProps.outline_width) {
-      markSymbolizer.strokeWidth = parseFloat(qmlMarkerProps.outline_width);
-    }
+    this.setSizeUnit(qmlMarkerProps.outline_width, qmlMarkerProps.outline_width_unit,
+      (_value) => {markSymbolizer.strokeWidth = _value;},
+      (_value) => {markSymbolizer.strokeWidthUnit = _value;}, true
+    );
 
     return markSymbolizer;
   }
@@ -636,9 +754,10 @@ export class QGISStyleParser implements StyleParser {
       if (qmlMarkerProps.offset) {
         lineSymbolizer.perpendicularOffset = parseFloat(qmlMarkerProps.offset);
       }
-      if (qmlMarkerProps.line_width) {
-        lineSymbolizer.width = parseFloat(qmlMarkerProps.line_width);
-      }
+      this.setSizeUnit(qmlMarkerProps.line_width, qmlMarkerProps.line_width_unit,
+        (_value) => {lineSymbolizer.width = _value;},
+        (_value) => {lineSymbolizer.widthUnit = _value;}
+      );
 
       return lineSymbolizer;
     });
@@ -685,7 +804,10 @@ export class QGISStyleParser implements StyleParser {
       }
 
       if (qmlMarkerProps.outline_width && 'no' !== outlineStyle) {
-        fillSymbolizer.outlineWidth = parseFloat(qmlMarkerProps.outline_width);
+        this.setSizeUnit(qmlMarkerProps.outline_width, qmlMarkerProps.outline_width_unit,
+          (_value) => {fillSymbolizer.outlineWidth = _value;},
+          (_value) => {fillSymbolizer.outlineWidthUnit = _value;}
+        );
       }
 
       // if you supply a fill with an outline color and no fill color,
@@ -875,7 +997,7 @@ export class QGISStyleParser implements StyleParser {
       joinstyle: symbolizer.join,
       capstyle: symbolizer.cap,
       line_width: symbolizer.width,
-      line_width_unit: 'Pixel'
+      line_width_unit: this.distanceUnitToQmlUnit(symbolizer.widthUnit)
     };
     if (symbolizer.dasharray) {
       qmlProps.customdash = symbolizer.dasharray.join(';');
@@ -909,7 +1031,7 @@ export class QGISStyleParser implements StyleParser {
       outline_style: symbolizer.outlineDasharray ? 'dash' : 'solid',
       outline_width: symbolizer.outlineWidth || '0',
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
-      outline_width_unit: 'Pixel',
+      outline_width_unit: this.distanceUnitToQmlUnit(symbolizer.outlineWidthUnit),
       customdash: symbolizer.outlineDasharray ? symbolizer.outlineDasharray.join(';') : undefined,
       outline_color: outlineColor
     };
@@ -961,7 +1083,7 @@ export class QGISStyleParser implements StyleParser {
       name: symbolizer.image,
       size: symbolizer.size,
       size_map_unit_scale: '3x:0,0,0,0,0,0',
-      size_unit: 'Pixel'
+      size_unit: this.distanceUnitToQmlUnit(symbolizer.sizeUnit)
     };
 
     return {
@@ -996,10 +1118,10 @@ export class QGISStyleParser implements StyleParser {
       outline_style: 'solid',
       outline_width: symbolizer.strokeWidth || 0,
       outline_width_map_unit_scale: '3x:0,0,0,0,0,0',
-      outline_width_unit: 'Pixel',
+      outline_width_unit: this.distanceUnitToQmlUnit(symbolizer.strokeWidthUnit),
       size: size,
       size_map_unit_scale: '3x:0,0,0,0,0,0',
-      size_unit: 'Pixel'
+      size_unit: this.distanceUnitToQmlUnit(symbolizer.radiusUnit)
     };
 
     return {
@@ -1162,7 +1284,7 @@ export class QGISStyleParser implements StyleParser {
               bufferSize: textSymbolizer.haloWidth || '0',
               bufferColor: bufferColor,
               bufferDraw: 1,
-              bufferSizeUnits: 'Pixel',
+              bufferSizeUnits: this.distanceUnitToQmlUnit(textSymbolizer.haloWidthUnit),
               bufferSizeMapUnitScale: '3x:0,0,0,0,0,0'
             }
           }];
