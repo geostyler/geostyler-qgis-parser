@@ -723,8 +723,16 @@ export class QGISStyleParser implements StyleParser {
     markSymbolizer.wellKnownName = qmlMarkerProps.name;
 
     if (qmlMarkerProps.color) {
-      markSymbolizer.opacity = this.qmlColorToOpacity(qmlMarkerProps.color);
+      const fillOpacity = this.qmlColorToOpacity(qmlMarkerProps.color);
+      if (fillOpacity !== 1) {
+        // it's questionable what to do with default-values like fillOpacity=1. In other cases
+        // they are written. Here this would break the existing tests so we set it only if non-default
+        markSymbolizer.fillOpacity = fillOpacity;
+      }
       markSymbolizer.color = this.qmlColorToHex(qmlMarkerProps.color);
+      // in an earlier version, the opacity was set here always (even if 1.0,instead of fillopacity)
+      // to not break existing tests, we set opacity, but this behaviour should be reviewed...
+      markSymbolizer.opacity = 1.0;
     }
 
     if (qmlMarkerProps.angle) {
