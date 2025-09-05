@@ -8,6 +8,7 @@ import point_multiple_symbols from '../data/styles/point_multiple_symbols';
 import point_ranges from '../data/styles/point_ranges';
 import point_rules from '../data/styles/point_rules';
 import point_simple from '../data/styles/point_simple';
+import point_transparent_fill from '../data/styles/point_transparent_fill';
 import polygon_outline_only from '../data/styles/polygon_outline_only';
 import polygon_point_pattern_fill from '../data/styles/polygon_point_pattern_fill';
 import polygon_simple from '../data/styles/polygon_simple';
@@ -50,6 +51,13 @@ describe('QMLStyleParser implements StyleParser', () => {
           const { output: geoStylerStyle } = await styleParser.readStyle(qml);
           expect(geoStylerStyle).toBeDefined();
           expect(geoStylerStyle).toEqual(point_simple);
+        });
+        it('can read a QML PointSymbol with transparent fill and opaque border', async () => {
+          expect.assertions(2);
+          const qml = fs.readFileSync(`./data/${qmlFolder}/point_transparent_fill.qml`, 'utf8');
+          const { output: geoStylerStyle } = await styleParser.readStyle(qml);
+          expect(geoStylerStyle).toBeDefined();
+          expect(geoStylerStyle).toEqual(point_transparent_fill);
         });
         it('can read a QML PointSymbolizer with an external graphic', async () => {
           expect.assertions(2);
