@@ -1,3 +1,17 @@
+## [4.1.0](https://github.com/geostyler/geostyler-qgis-parser/compare/v4.0.2...v4.1.0) (2025-11-05)
+
+### Features
+
+* add prepare script to package.json to allow reverse deps to install from git repostiory ([c8fc567](https://github.com/geostyler/geostyler-qgis-parser/commit/c8fc567432c5d11043003fe97c5031d49929376b))
+* respect fontweight and fontItalic style-properties ([9dd08a2](https://github.com/geostyler/geostyler-qgis-parser/commit/9dd08a2d7f79b782cb2db71af9340a6b09d67e7c))
+* support PointPatternFill ([47f62b5](https://github.com/geostyler/geostyler-qgis-parser/commit/47f62b5b424d20b8f44a3d35456dcde989670720))
+* support qgis simple line borders with no non-outline style ([2beb846](https://github.com/geostyler/geostyler-qgis-parser/commit/2beb846f46cb27cb4b2c42b0c8e7a3789c8479c0))
+
+### Bug Fixes
+
+* **deps:** update dependency geostyler-cql-parser to v4.1.1 ([4cf78f8](https://github.com/geostyler/geostyler-qgis-parser/commit/4cf78f8cceba752f03dd0b02f5345a8f46159125))
+* update tests for expanded styling support ([6a6bf63](https://github.com/geostyler/geostyler-qgis-parser/commit/6a6bf6360846782df08f5c1600172b2938de9eae))
+
 ## [4.0.2](https://github.com/geostyler/geostyler-qgis-parser/compare/v4.0.1...v4.0.2) (2025-03-12)
 
 ### Bug Fixes

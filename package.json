@@ -1,6 +1,6 @@
 {
   "name": "geostyler-qgis-parser",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "GeoStyler Style Parser implementation for QGIS Style",
   "main": "dist/QGISStyleParser.js",
   "type": "module",
