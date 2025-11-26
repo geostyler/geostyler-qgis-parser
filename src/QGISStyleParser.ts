@@ -670,6 +670,11 @@ export class QGISStyleParser implements StyleParser {
 
     if (styleProperties.textColor) {
       textSymbolizer.color = this.qmlColorToHex(styleProperties.textColor);
+      const textOpacity =  this.qmlColorToOpacity(styleProperties.textColor);
+      if (textOpacity!==undefined && textOpacity!==1) {
+        // don't break tests: if opacity is default, don't set it
+        textSymbolizer.opacity = textOpacity;
+      }
     }
     if (styleProperties.fieldName) {
       // TODO parse fieldName templates like: "'ID: ' || ID"
