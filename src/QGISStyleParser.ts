@@ -812,6 +812,17 @@ export class QGISStyleParser implements StyleParser {
       (_value) => {markSymbolizer.strokeWidthUnit = _value;}, true
     );
 
+    // for compatibility and for not breaking existing tests, we can set the whole marker
+    // to transparent if fill is fully transparent and stroke too or if there is no outline
+    if (markSymbolizer.fillOpacity === 0 && (!qmlMarkerProps.outline_color || markSymbolizer.strokeOpacity === 0)) {
+      markSymbolizer.fillOpacity = undefined;
+      markSymbolizer.opacity = 0;
+    }
+    else {
+      // in this case, the opacity is only controlled by the fillOpacity and/or strokeOpacity
+      markSymbolizer.opacity = 1;
+    }
+
     return markSymbolizer;
   }
 
