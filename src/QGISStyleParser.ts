@@ -190,7 +190,7 @@ export class QGISStyleParser implements StyleParser {
       };
     } catch (error) {
       return {
-        errors: [error]
+        errors: [error instanceof Error ? error : new Error(String(error))]
       };
     }
   };
@@ -1012,7 +1012,7 @@ export class QGISStyleParser implements StyleParser {
         });
       } catch (error) {
         resolve({
-          errors: [error]
+          errors: [error instanceof Error ? error : new Error(String(error))]
         });
       }
     });

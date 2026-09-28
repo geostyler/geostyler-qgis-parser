@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [],
   build: {
     manifest: true,
+    sourcemap: true,
     lib: {
       entry: './src/QGISStyleParser.ts',
       name: 'GeoStylerQGISParser',
@@ -16,8 +17,7 @@ export default defineConfig({
         dir: 'dist',
         exports: 'named',
         generatedCode: 'es5',
-        format: 'iife',
-        sourcemap: true
+        format: 'iife'
       },
     }
   },
