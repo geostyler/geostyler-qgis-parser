@@ -65,7 +65,7 @@
     "extensionless": "^2.0.6",
     "jest": "^30.5.2",
     "semantic-release": "^24.2.9",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "vite": "^5.4.21",
     "vitest": "^1.6.1"
   },
