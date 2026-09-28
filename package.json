@@ -27,7 +27,7 @@
   "homepage": "https://github.com/geostyler/geostyler-qgis-parser#readme",
   "dependencies": {
     "buffer": "^6.0.3",
-    "color": "^4.2.3",
+    "color": "^5.0.3",
     "core-js": "^3.50.0",
     "geostyler-cql-parser": "^4.0.0",
     "geostyler-style": "^13.0.0",
@@ -49,14 +49,14 @@
     "test": "NODE_OPTIONS=--import=extensionless/register vitest run"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@terrestris/eslint-config-typescript": "^3.1.0",
     "@types/color": "^4.2.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.19.43",
+    "@types/node": "^26.6.3",
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
@@ -64,10 +64,10 @@
     "eslint": "^8.28.0",
     "extensionless": "^2.0.6",
     "jest": "^30.5.2",
-    "semantic-release": "^24.2.9",
+    "semantic-release": "^25.0.9",
     "typescript": "^6.0.3",
-    "vite": "^5.4.21",
-    "vitest": "^1.6.1"
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
   },
   "funding": "https://opencollective.com/geostyler"
 }
