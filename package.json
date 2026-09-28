@@ -67,7 +67,7 @@
     "semantic-release": "^24.2.9",
     "typescript": "^6.0.3",
     "vite": "^5.4.21",
-    "vitest": "^1.6.1"
+    "vitest": "^4.1.11"
   },
   "funding": "https://opencollective.com/geostyler"
 }
