@@ -49,8 +49,8 @@
     "test": "NODE_OPTIONS=--import=extensionless/register vitest run"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@terrestris/eslint-config-typescript": "^3.1.0",
