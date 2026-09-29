@@ -20,15 +20,30 @@ import {
 import { CqlParser } from 'geostyler-cql-parser';
 import Color from 'color';
 
-import {
-  parseString,
-  Builder
-} from 'xml2js';
+import { XMLBuilder, XMLParser, XMLValidator } from 'fast-xml-parser';
 
 // Constants for mapping QML-units
 const DEF_RESOLUTION = 96.0;
 const PT_PER_INCH = 72.0;
 const MM_PER_INCH = 25.4;
+const xmlParser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  attributesGroupName: '$',
+  parseAttributeValue: false,
+  parseTagValue: false,
+  trimValues: false,
+  isArray: (_tagName, path, _isLeafNode, isAttribute) =>
+    !isAttribute && typeof path === 'string' && path.includes('.')
+});
+const xmlBuilder = new XMLBuilder({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  attributesGroupName: '$',
+  format: true,
+  indentBy: '  ',
+  suppressEmptyNode: true
+});
 
 const get = (obj: any, path: any, defaultValue = undefined) => {
   const travel = (regexp: RegExp) =>
@@ -170,23 +185,17 @@ export class QGISStyleParser implements StyleParser {
    * @return {Promise} The Promise resolving with the GeoStyler-Style Style
    */
   readStyle = async (qmlString: string): Promise<ReadStyleResult> => {
-    const options = {};
     try {
-      let readResult;
-      parseString(qmlString, options, (err: any, result: any) => {
-        if (err) {
-          readResult = {
-            errors: [err]
-          };
-          return;
-        }
-        const geoStylerStyle: Style = this.qmlObjectToGeoStylerStyle(result);
-        readResult = {
-          output: geoStylerStyle
+      const validation = XMLValidator.validate(qmlString);
+      if (validation !== true) {
+        return {
+          errors: [new Error(validation.err.msg)]
         };
-      });
-      return readResult || {
-        errors: []
+      }
+      const result = xmlParser.parse(qmlString);
+      const geoStylerStyle: Style = this.qmlObjectToGeoStylerStyle(result);
+      return {
+        output: geoStylerStyle
       };
     } catch (error) {
       return {
@@ -241,9 +250,9 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
-   * Get the GeoStyler-Style Style from an QML Object (created with xml2js).
+   * Get the GeoStyler-Style Style from an QML Object.
    *
-   * @param {object} qmlObject The QML object representation (created with xml2js)
+   * @param {object} qmlObject The QML object representation
    * @return {Style} The GeoStyler-Style Style
    */
   qmlObjectToGeoStylerStyle(qmlObject: object): Style {
@@ -447,9 +456,9 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
-   * Get the GeoStyler-Style Rule from an QML Object (created with xml2js).
+   * Get the GeoStyler-Style Rule from an QML Object.
    *
-   * @param {object} qmlObject The QML object representation (created with xml2js)
+   * @param {object} qmlObject The QML object representation
    * @return {Rule} The GeoStyler-Style Rule
    */
   getRulesFromQmlObject(qmlObject: any): Rule[] {
@@ -998,15 +1007,10 @@ export class QGISStyleParser implements StyleParser {
   writeStyle(geoStylerStyle: Style): Promise<WriteStyleResult<string>> {
     return new Promise<WriteStyleResult<string>>(resolve => {
       try {
-        const builder = new Builder();
         const qmlObject = this.geoStylerStyleToQmlObject(geoStylerStyle);
         this.convertTextSymbolizers(qmlObject, geoStylerStyle);
-        const qmlString = builder
-          .buildObject(qmlObject)
-          .replace(
-            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
-            '<!DOCTYPE qgis PUBLIC \'http://mrcc.com/qgis.dtd\' \'SYSTEM\'>'
-          );
+        const qmlString = '<!DOCTYPE qgis PUBLIC \'http://mrcc.com/qgis.dtd\' \'SYSTEM\'>\n'
+          + xmlBuilder.build(qmlObject).replace(/&gt;/g, '>').trimEnd();
         resolve({
           output: qmlString
         });
@@ -1295,10 +1299,10 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
-   * Get the QML Object (readable with xml2js) from an GeoStyler-Style Style
+   * Get the QML Object from a GeoStyler-Style Style.
    *
    * @param {Style} geoStylerStyle A GeoStyler-Style Style.
-   * @return {object} The object representation of a QML Style (readable with xml2js)
+   * @return {object} The object representation of a QML Style
    */
   geoStylerStyleToQmlObject(geoStylerStyle: Style): any {
     const type: string = 'RuleRenderer';
