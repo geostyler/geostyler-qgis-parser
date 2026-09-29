@@ -76,19 +76,30 @@ describe('QMLStyleParser implements StyleParser', () => {
       });
 
       describe('QGISStyleParser XML handling', () => {
-        const styleParser = new QGISStyleParser();
+        const parser = new QGISStyleParser();
 
         it('preserves single and repeated child elements and string attributes', async () => {
           const qml = '<qgis><renderer-v2 type="RuleRenderer"><rules>'
             + '<rule label="first" symbol="0"/><rule label="second" symbol="0"/>'
             + '</rules></renderer-v2></qgis>';
-          const result = await styleParser.readStyle(qml);
+          const result = await parser.readStyle(qml);
 
           expect(result.output?.rules.map(rule => rule.name)).toEqual(['first', 'second']);
         });
 
+        it('handles empty elements without changing the output shape', async () => {
+          const result = await parser.readStyle('<qgis><renderer-v2 type="nullSymbol"/><custom/></qgis>');
+
+          expect(result).toEqual({
+            output: {
+              name: 'QGIS Style',
+              rules: []
+            }
+          });
+        });
+
         it('returns malformed XML errors in the standard result shape', async () => {
-          const result = await styleParser.readStyle('<qgis><renderer-v2></qgis>');
+          const result = await parser.readStyle('<qgis><renderer-v2></qgis>');
 
           expect(result.errors).toHaveLength(1);
           expect(result.errors?.[0]).toBeInstanceOf(Error);

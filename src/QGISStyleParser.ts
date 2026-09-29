@@ -250,9 +250,9 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
-   * Get the GeoStyler-Style Style from an QML Object (created with xml2js).
+   * Get the GeoStyler-Style Style from an QML Object.
    *
-   * @param {object} qmlObject The QML object representation (created with xml2js)
+   * @param {object} qmlObject The QML object representation
    * @return {Style} The GeoStyler-Style Style
    */
   qmlObjectToGeoStylerStyle(qmlObject: object): Style {
@@ -456,9 +456,9 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
-   * Get the GeoStyler-Style Rule from an QML Object (created with xml2js).
+   * Get the GeoStyler-Style Rule from an QML Object.
    *
-   * @param {object} qmlObject The QML object representation (created with xml2js)
+   * @param {object} qmlObject The QML object representation
    * @return {Rule} The GeoStyler-Style Rule
    */
   getRulesFromQmlObject(qmlObject: any): Rule[] {
@@ -1299,10 +1299,10 @@ export class QGISStyleParser implements StyleParser {
   }
 
   /**
-   * Get the QML Object (readable with xml2js) from an GeoStyler-Style Style
+   * Get the QML Object from a GeoStyler-Style Style.
    *
    * @param {Style} geoStylerStyle A GeoStyler-Style Style.
-   * @return {object} The object representation of a QML Style (readable with xml2js)
+   * @return {object} The object representation of a QML Style
    */
   geoStylerStyleToQmlObject(geoStylerStyle: Style): any {
     const type: string = 'RuleRenderer';
