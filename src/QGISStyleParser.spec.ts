@@ -74,6 +74,26 @@ describe('QMLStyleParser implements StyleParser', () => {
           expect(geoStylerStyle).toEqual(point_multiple_symbols);
         });
       });
+
+      describe('QGISStyleParser XML handling', () => {
+        const styleParser = new QGISStyleParser();
+
+        it('preserves single and repeated child elements and string attributes', async () => {
+          const qml = '<qgis><renderer-v2 type="RuleRenderer"><rules>'
+            + '<rule label="first" symbol="0"/><rule label="second" symbol="0"/>'
+            + '</rules></renderer-v2></qgis>';
+          const result = await styleParser.readStyle(qml);
+
+          expect(result.output?.rules.map(rule => rule.name)).toEqual(['first', 'second']);
+        });
+
+        it('returns malformed XML errors in the standard result shape', async () => {
+          const result = await styleParser.readStyle('<qgis><renderer-v2></qgis>');
+
+          expect(result.errors).toHaveLength(1);
+          expect(result.errors?.[0]).toBeInstanceOf(Error);
+        });
+      });
       describe('TextSymbolizer', () => {
         it('can read some basics of the QML Labeling for Points', async () => {
           expect.assertions(2);
