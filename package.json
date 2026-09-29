@@ -46,7 +46,7 @@
     "prepublishOnly": "npm run lint:test:build",
     "test-debug": "NODE_OPTIONS=--import=extensionless/register vitest --inspect-brk --no-file-parallelism",
     "test-watch": "NODE_OPTIONS=--import=extensionless/register vitest",
-    "test": "NODE_OPTIONS=--import=extensionless/register vitest run"
+    "test": "NODE_OPTIONS=--import=extensionless/register vitest run --coverage"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
@@ -60,6 +60,7 @@
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
+    "@vitest/coverage-v8": "^5.0.2",
     "conventional-changelog-conventionalcommits": "^10.4.0",
     "eslint": "^8.28.0",
     "extensionless": "^2.0.6",
