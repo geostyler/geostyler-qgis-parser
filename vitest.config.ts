@@ -8,7 +8,7 @@ export default defineConfig({
       }
     },
     coverage: {
-      provider: 'istanbul',
+      provider: 'v8',
       reporter: ['text', 'html', 'clover', 'json', 'lcov']
     },
     globals: true,
